@@ -2,28 +2,6 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
   Sheet,
   SheetContent,
   SheetTrigger,
@@ -243,79 +221,78 @@ type ActiveTab = 'dashboard' | 'keywords' | 'audit' | 'serp';
 
 // ─── Apple Color Constants ─────────────────────────────────────────────────────
 
-const BLUE = '#0A84FF';
-const BLUE_HOVER = '#409CFF';
-const CYAN = '#64D2FF';
-const RED = '#FF453A';
-const ORANGE = '#FF9F0A';
-const GREEN = '#30D158';
+const BLUE = '#0071e3';
+const BLUE_LIGHT = '#2997ff';
+const GREEN = '#30d158';
+const ORANGE = '#ff9f0a';
+const RED = '#ff453a';
 
 // ─── Helper Functions ─────────────────────────────────────────────────────────
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-[#64D2FF]';
-  if (score >= 60) return 'text-white';
-  return 'text-white/35';
+  if (score >= 80) return 'text-[#2997ff]';
+  if (score >= 60) return 'text-[#f5f5f7]';
+  return 'text-[#6e6e73]';
 }
 
 function getScoreBgColor(score: number): string {
-  if (score >= 80) return 'bg-[#0A84FF]';
+  if (score >= 80) return 'bg-[#0071e3]';
   if (score >= 60) return 'bg-white/25';
   return 'bg-white/12';
 }
 
 function getScoreRingColor(score: number): string {
-  if (score >= 80) return '#0A84FF';
+  if (score >= 80) return '#0071e3';
   if (score >= 60) return 'rgba(255,255,255,0.40)';
   return 'rgba(255,255,255,0.15)';
 }
 
-function getDifficultyColor(label: string): string {
+function getDifficultyBadge(label: string): string {
   switch (label?.toLowerCase()) {
-    case 'easy': return 'badge badge-blue';
-    case 'medium': return 'badge badge-fill';
-    case 'hard': return 'badge badge-orange';
-    case 'very hard': return 'badge badge-red';
-    default: return 'badge badge-fill';
+    case 'easy': return 'apple-badge apple-badge-blue';
+    case 'medium': return 'apple-badge apple-badge-fill';
+    case 'hard': return 'apple-badge apple-badge-orange';
+    case 'very hard': return 'apple-badge apple-badge-red';
+    default: return 'apple-badge apple-badge-fill';
   }
 }
 
 function getDifficultyDotColor(score: number): string {
-  if (score < 30) return 'bg-[#0A84FF]';
+  if (score < 30) return 'bg-[#0071e3]';
   if (score < 60) return 'bg-white/50';
-  return 'bg-[#FF9F0A]';
+  return 'bg-[#ff9f0a]';
 }
 
 function getIssueBadge(type: 'error' | 'warning' | 'info') {
   switch (type) {
-    case 'error': return <span className="badge badge-red"><XCircle className="mr-1 h-3 w-3" />Error</span>;
-    case 'warning': return <span className="badge badge-orange"><AlertTriangle className="mr-1 h-3 w-3" />Warning</span>;
-    case 'info': return <span className="badge badge-blue"><Info className="mr-1 h-3 w-3" />Info</span>;
+    case 'error': return <span className="apple-badge apple-badge-red"><XCircle className="mr-1 h-3 w-3" />Error</span>;
+    case 'warning': return <span className="apple-badge apple-badge-orange"><AlertTriangle className="mr-1 h-3 w-3" />Warning</span>;
+    case 'info': return <span className="apple-badge apple-badge-blue"><Info className="mr-1 h-3 w-3" />Info</span>;
   }
 }
 
 function getPriorityBadge(priority: 'high' | 'medium' | 'low') {
   switch (priority) {
-    case 'high': return <span className="badge badge-red">High</span>;
-    case 'medium': return <span className="badge badge-orange">Medium</span>;
-    case 'low': return <span className="badge badge-blue">Low</span>;
+    case 'high': return <span className="apple-badge apple-badge-red">High</span>;
+    case 'medium': return <span className="apple-badge apple-badge-orange">Medium</span>;
+    case 'low': return <span className="apple-badge apple-badge-blue">Low</span>;
   }
 }
 
 function getResultTypeBadge(type: string) {
   const m: Record<string, string> = {
-    blog: 'badge badge-blue', ecommerce: 'badge badge-fill', video: 'badge badge-orange',
-    forum: 'badge badge-fill', news: 'badge badge-blue', web: 'badge badge-fill',
+    blog: 'apple-badge apple-badge-blue', ecommerce: 'apple-badge apple-badge-fill', video: 'apple-badge apple-badge-orange',
+    forum: 'apple-badge apple-badge-fill', news: 'apple-badge apple-badge-blue', web: 'apple-badge apple-badge-fill',
   };
   return <span className={m[type] || m.web}>{type}</span>;
 }
 
 function getSourceBadge(source: string) {
   const m: Record<string, string> = {
-    'google-suggest': 'badge badge-blue', 'people-also-ask': 'badge badge-fill',
-    'related-searches': 'badge badge-fill', 'expansion': 'badge badge-outline', 'questions': 'badge badge-blue',
+    'google-suggest': 'apple-badge apple-badge-blue', 'people-also-ask': 'apple-badge apple-badge-fill',
+    'related-searches': 'apple-badge apple-badge-fill', 'expansion': 'apple-badge apple-badge-outline', 'questions': 'apple-badge apple-badge-blue',
   };
-  return <span className={m[source] || 'badge badge-fill'}>{source}</span>;
+  return <span className={m[source] || 'apple-badge apple-badge-fill'}>{source}</span>;
 }
 
 // ─── Score Circle Component ────────────────────────────────────────────────────
@@ -353,12 +330,12 @@ function ScoreCircle({ score, size = 120, label }: { score: number; size?: numbe
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className={cn('text-2xl font-bold tracking-tight', getScoreColor(score))}>
+          <span className={cn('text-2xl font-semibold tracking-tight', getScoreColor(score))}>
             {score}
           </span>
         </div>
       </div>
-      {label && <span className="text-xs text-white/55 font-medium">{label}</span>}
+      {label && <span className="apple-caption">{label}</span>}
     </div>
   );
 }
@@ -368,13 +345,13 @@ function ScoreCircle({ score, size = 120, label }: { score: number; size?: numbe
 function CategoryScoreBar({ label, score }: { label: string; score: number }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-white/55 capitalize">{label}</span>
-        <span className={cn('font-semibold', getScoreColor(score))}>{score}%</span>
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-[#86868b] capitalize">{label}</span>
+        <span className={cn('text-sm font-semibold', getScoreColor(score))}>{score}%</span>
       </div>
-      <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
+      <div className="apple-progress-track">
         <motion.div
-          className={cn('h-full rounded-full', getScoreBgColor(score))}
+          className={cn('apple-progress-fill', score >= 80 ? '' : score >= 60 ? 'bg-white/25' : 'bg-white/12')}
           initial={{ width: 0 }}
           animate={{ width: `${score}%` }}
           transition={{ type: 'spring', stiffness: 200, damping: 25, delay: 0.3 }}
@@ -392,16 +369,53 @@ function ReadinessChecklist({ items }: { items: Record<string, boolean> }) {
       {Object.entries(items).map(([key, value]) => (
         <div key={key} className="flex items-center gap-2.5 text-sm">
           {value ? (
-            <CheckCircle2 className="h-4 w-4 text-[#0A84FF] shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-[#0071e3] shrink-0" />
           ) : (
-            <XCircle className="h-4 w-4 text-white/12 shrink-0" />
+            <XCircle className="h-4 w-4 text-[#424245] shrink-0" />
           )}
-          <span className={value ? 'text-white' : 'text-white/55'}>
+          <span className={value ? 'text-[#f5f5f7]' : 'text-[#86868b]'}>
             {key.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase())}
           </span>
         </div>
       ))}
     </div>
+  );
+}
+
+// ─── Apple Checkbox ────────────────────────────────────────────────────────────
+
+function AppleCheckbox({
+  id,
+  checked,
+  onChange,
+  label,
+}: {
+  id: string;
+  checked: boolean;
+  onChange: (val: boolean) => void;
+  label: string;
+}) {
+  return (
+    <label htmlFor={id} className="flex items-center gap-2 cursor-pointer">
+      <div
+        className={cn(
+          'flex h-[18px] w-[18px] items-center justify-center rounded-[5px] border transition-all duration-[240ms]',
+          checked
+            ? 'bg-[#0071e3] border-[#0071e3]'
+            : 'bg-transparent border-[rgba(255,255,255,0.15)]'
+        )}
+      >
+        <input
+          type="checkbox"
+          id={id}
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          className="sr-only"
+        />
+        {checked && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+      </div>
+      <span className="text-sm text-[#f5f5f7]">{label}</span>
+    </label>
   );
 }
 
@@ -654,7 +668,7 @@ export default function SEOInsightApp() {
       {/* Hero */}
       <div className="text-center py-12 md:py-20">
         <motion.h1
-          className="text-[34px] md:text-[56px] font-bold tracking-[-0.02em] text-white"
+          className="apple-headline"
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={pageTransition}
@@ -662,7 +676,7 @@ export default function SEOInsightApp() {
           SEO Insight
         </motion.h1>
         <motion.p
-          className="mt-4 text-lg md:text-xl text-white/55 max-w-2xl mx-auto"
+          className="mt-4 apple-subheadline max-w-[600px] mx-auto"
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...pageTransition, delay: 0.08 }}
@@ -675,20 +689,20 @@ export default function SEOInsightApp() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...pageTransition, delay: 0.16 }}
         >
-          <span className="badge badge-blue px-4 py-1.5 text-sm font-medium">
+          <span className="apple-badge apple-badge-blue px-4 py-1.5 text-sm font-medium">
             <Zap className="mr-1.5 h-3.5 w-3.5" /> SEO Optimization
           </span>
-          <span className="badge badge-blue px-4 py-1.5 text-sm font-medium">
+          <span className="apple-badge apple-badge-blue px-4 py-1.5 text-sm font-medium">
             <Bot className="mr-1.5 h-3.5 w-3.5" /> AEO Readiness
           </span>
-          <span className="badge badge-blue px-4 py-1.5 text-sm font-medium">
+          <span className="apple-badge apple-badge-blue px-4 py-1.5 text-sm font-medium">
             <Brain className="mr-1.5 h-3.5 w-3.5" /> GEO Analysis
           </span>
         </motion.div>
       </div>
 
-      {/* Feature Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* Feature Cards — Apple tile grid */}
+      <div className="apple-grid-4">
         {[
           {
             title: 'Keyword Discovery',
@@ -721,39 +735,36 @@ export default function SEOInsightApp() {
             variants={cardVariants}
             initial="hidden"
             animate="visible"
-            whileHover={{ scale: 1.008, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
           >
-            <Card
-              className="cursor-pointer mat-card rounded-[20px] h-full transition-shadow duration-300"
+            <div
+              className="apple-tile cursor-pointer p-6 h-full"
               onClick={() => setActiveTab(feature.tab)}
             >
-              <CardHeader className="pb-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-[12px] fill-blue-1">
-                  <span className="text-[#64D2FF]">{feature.icon}</span>
-                </div>
-                <CardTitle className="text-lg mt-3 font-semibold text-white">
-                  {feature.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm leading-relaxed text-white/55">{feature.description}</CardDescription>
-                <div className="mt-4 flex items-center text-sm font-medium text-[#64D2FF] group-hover:gap-2 transition-all">
-                  Get started <ArrowRight className="h-4 w-4 ml-1" />
-                </div>
-              </CardContent>
-            </Card>
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(0,113,227,0.12)]">
+                <span className="text-[#2997ff]">{feature.icon}</span>
+              </div>
+              <h3 className="apple-callout mt-4">
+                {feature.title}
+              </h3>
+              <p className="mt-2 text-sm text-[#86868b] leading-relaxed">{feature.description}</p>
+              <div className="mt-4">
+                <span className="apple-link text-sm">
+                  Learn more <ChevronRight className="h-3 w-3" />
+                </span>
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Quick Start Guide */}
-      <div className="mat-subtle rounded-[24px] p-8 md:p-10">
+      {/* Quick Start Guide — Apple tile */}
+      <div className="apple-tile p-8 md:p-10">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="h-5 w-5 text-[#64D2FF]" />
-          <h2 className="text-[28px] font-bold tracking-[-0.02em] text-white">Quick Start Guide</h2>
+          <Sparkles className="h-5 w-5 text-[#2997ff]" />
+          <h2 className="apple-headline-reduced">Quick Start Guide</h2>
         </div>
-        <p className="text-white/55 mb-8">Follow these steps to get the most out of SEO Insight</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <p className="text-[#86868b] mb-8">Follow these steps to get the most out of SEO Insight</p>
+        <div className="apple-grid-4">
           {[
             {
               step: 1,
@@ -787,23 +798,23 @@ export default function SEOInsightApp() {
               initial="hidden"
               animate="visible"
             >
-              <div className="relative p-5 rounded-[20px] mat-card hover:shadow-lg transition-shadow duration-300">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0A84FF] text-white text-xs font-bold mb-3">
+              <div className="p-5 rounded-[18px] bg-[rgba(255,255,255,0.04)]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0071e3] text-white text-xs font-semibold mb-3">
                   {item.step}
                 </div>
-                <div className="flex items-center gap-2 mb-2 text-[#64D2FF]">
-                  {item.icon}
-                  <span className="font-semibold text-sm text-white">{item.title}</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[#2997ff]">{item.icon}</span>
+                  <span className="font-semibold text-sm text-[#f5f5f7]">{item.title}</span>
                 </div>
-                <p className="text-xs text-white/55 leading-relaxed">{item.description}</p>
+                <p className="text-xs text-[#86868b] leading-relaxed">{item.description}</p>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {/* Info Cards — Apple tiles with large typography */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {[
           {
             title: 'SEO',
@@ -830,22 +841,19 @@ export default function SEOInsightApp() {
             variants={cardVariants}
             initial="hidden"
             animate="visible"
-            whileHover={{ scale: 1.008, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
           >
-            <Card className="mat-card rounded-[20px] h-full">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-[12px] fill-blue-1">
-                    <span className="text-[#64D2FF]">{item.icon}</span>
-                  </div>
-                  <div>
-                    <p className="text-[28px] font-bold text-white">{item.title}</p>
-                    <p className="text-sm text-white/55">{item.subtitle}</p>
-                  </div>
+            <div className="apple-tile p-6 h-full">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[rgba(0,113,227,0.12)]">
+                  <span className="text-[#2997ff]">{item.icon}</span>
                 </div>
-                <p className="mt-4 text-sm text-white/55 leading-relaxed">{item.description}</p>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="apple-headline-reduced !text-[28px]">{item.title}</p>
+                  <p className="text-sm text-[#86868b]">{item.subtitle}</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-[#86868b] leading-relaxed">{item.description}</p>
+            </div>
           </motion.div>
         ))}
       </div>
@@ -857,180 +865,167 @@ export default function SEOInsightApp() {
   const KeywordsTab = () => (
     <div className="space-y-8">
       <div>
-        <h2 className="text-[28px] font-bold tracking-[-0.02em] text-white">Keyword Discovery</h2>
-        <p className="text-white/55 mt-1">Find high-value keywords with difficulty analysis and clustering</p>
+        <h2 className="apple-headline-reduced">Keyword Discovery</h2>
+        <p className="apple-body mt-1">Find high-value keywords with difficulty analysis and clustering</p>
       </div>
 
-      <Card className="mat-card rounded-[20px]">
-        <CardHeader>
-          <CardTitle className="text-[20px] font-semibold text-white">Seed Keyword</CardTitle>
-          <CardDescription className="text-white/55">Enter a keyword to discover related keywords across multiple sources</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/35" />
-              <Input
-                placeholder="Enter a seed keyword (e.g., 'seo tools')"
-                value={keywordInput}
-                onChange={(e) => setKeywordInput(e.target.value)}
-                className="pl-10 app-input text-white placeholder:text-white/30 h-11"
-                onKeyDown={(e) => e.key === 'Enter' && discoverKeywords()}
-              />
-            </div>
-            <Button
-              onClick={discoverKeywords}
-              disabled={keywordLoading || !keywordInput.trim()}
-              className="btn-primary shrink-0 px-6 h-11"
-            >
-              {keywordLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Discovering...
-                </>
-              ) : (
-                <>
-                  <Search className="mr-2 h-4 w-4" /> Discover
-                </>
-              )}
-            </Button>
+      <div className="apple-tile p-6 space-y-5">
+        <div>
+          <h3 className="apple-callout">Seed Keyword</h3>
+          <p className="text-sm text-[#86868b] mt-1">Enter a keyword to discover related keywords across multiple sources</p>
+        </div>
+        <div className="flex gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6e6e73]" />
+            <input
+              type="text"
+              placeholder="Enter a seed keyword (e.g., 'seo tools')"
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+              className="apple-input w-full"
+              onKeyDown={(e) => e.key === 'Enter' && discoverKeywords()}
+            />
           </div>
+          <button
+            onClick={discoverKeywords}
+            disabled={keywordLoading || !keywordInput.trim()}
+            className="apple-btn apple-btn-primary px-6 h-10 shrink-0"
+          >
+            {keywordLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Discovering...
+              </>
+            ) : (
+              <>
+                <Search className="h-4 w-4" /> Discover
+              </>
+            )}
+          </button>
+        </div>
 
-          <div className="flex flex-wrap gap-5">
-            {Object.entries(keywordSources).map(([source, checked]) => (
-              <div key={source} className="flex items-center gap-2">
-                <Checkbox
-                  id={`source-${source}`}
-                  checked={checked}
-                  onCheckedChange={(val) =>
-                    setKeywordSources((prev) => ({ ...prev, [source]: !!val }))
-                  }
-                  className="data-[state=checked]:bg-[#0A84FF] data-[state=checked]:border-[#0A84FF]"
-                />
-                <Label htmlFor={`source-${source}`} className="text-sm cursor-pointer text-white">
-                  {source.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        <div className="flex flex-wrap gap-5">
+          {Object.entries(keywordSources).map(([source, checked]) => (
+            <AppleCheckbox
+              key={source}
+              id={`source-${source}`}
+              checked={checked}
+              onChange={(val) => setKeywordSources((prev) => ({ ...prev, [source]: val }))}
+              label={source.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+            />
+          ))}
+        </div>
+      </div>
 
       {keywordError && (
-        <Card className="mat-card border-[#FF453A]/12 rounded-[20px]">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-white">
-              <AlertCircle className="h-5 w-5" />
-              <p>{keywordError}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6" style={{ borderLeft: '3px solid #ff453a' }}>
+          <div className="flex items-center gap-2 text-[#f5f5f7]">
+            <AlertCircle className="h-5 w-5 text-[#ff453a]" />
+            <p>{keywordError}</p>
+          </div>
+        </div>
       )}
 
       {keywordResults.length > 0 && (
         <>
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <span className="badge badge-blue text-sm py-1.5 px-4 font-medium">
+              <span className="apple-badge apple-badge-blue text-sm py-1.5 px-4 font-medium">
                 {keywordResults.length} keywords found
               </span>
-              <span className="badge badge-fill text-sm py-1.5 px-4 font-medium">
+              <span className="apple-badge apple-badge-fill text-sm py-1.5 px-4 font-medium">
                 {Object.keys(clusteredKeywords).length} clusters
               </span>
             </div>
-            <div className="flex items-center gap-1 fill-2 rounded-full p-1">
-              <Button
-                variant={keywordView === 'table' ? 'default' : 'ghost'}
-                size="sm"
+            <div className="flex items-center gap-1 bg-[rgba(255,255,255,0.06)] rounded-full p-1">
+              <button
                 onClick={() => setKeywordView('table')}
-                className={cn('rounded-full text-sm', keywordView === 'table' ? 'bg-[#0A84FF] shadow-sm text-white' : 'text-white/55')}
+                className={cn(
+                  'apple-btn text-sm px-4 py-1.5 min-h-0 h-8',
+                  keywordView === 'table' ? 'bg-[#0071e3] text-white' : 'text-[#86868b] hover:bg-[rgba(255,255,255,0.06)]'
+                )}
               >
                 <FileText className="mr-1.5 h-3.5 w-3.5" /> Table
-              </Button>
-              <Button
-                variant={keywordView === 'cluster' ? 'default' : 'ghost'}
-                size="sm"
+              </button>
+              <button
                 onClick={() => setKeywordView('cluster')}
-                className={cn('rounded-full text-sm', keywordView === 'cluster' ? 'bg-[#0A84FF] shadow-sm text-white' : 'text-white/55')}
+                className={cn(
+                  'apple-btn text-sm px-4 py-1.5 min-h-0 h-8',
+                  keywordView === 'cluster' ? 'bg-[#0071e3] text-white' : 'text-[#86868b] hover:bg-[rgba(255,255,255,0.06)]'
+                )}
               >
                 <Layers className="mr-1.5 h-3.5 w-3.5" /> Clusters
-              </Button>
+              </button>
             </div>
           </div>
 
           {keywordView === 'table' ? (
-            <Card className="mat-card rounded-[20px] overflow-hidden">
-              <ScrollArea className="max-h-[600px]">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="fill-3 hover:fill-3">
-                      <TableHead className="w-[40%] text-white/55 font-medium">Keyword</TableHead>
-                      <TableHead className="text-white/55 font-medium">Source</TableHead>
-                      <TableHead className="text-white/55 font-medium">Difficulty</TableHead>
-                      <TableHead className="text-white/55 font-medium">Cluster</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+            <div className="apple-tile overflow-hidden">
+              <div className="max-h-[600px] overflow-y-auto apple-scrollbar">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-[rgba(255,255,255,0.06)]">
+                      <th className="w-[40%] text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Keyword</th>
+                      <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Source</th>
+                      <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Difficulty</th>
+                      <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Cluster</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {keywordResults.map((kw, idx) => (
-                      <TableRow key={idx} className="hover:bg-white/5 transition-colors border-white/6">
-                        <TableCell className="font-medium text-white">{kw.keyword}</TableCell>
-                        <TableCell>{getSourceBadge(kw.source)}</TableCell>
-                        <TableCell>
+                      <tr key={idx} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+                        <td className="px-5 py-3.5 font-medium text-sm text-[#f5f5f7]">{kw.keyword}</td>
+                        <td className="px-5 py-3.5">{getSourceBadge(kw.source)}</td>
+                        <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2">
                             <div className={cn('h-2 w-2 rounded-full', getDifficultyDotColor(kw.difficulty.score))} />
-                            <span className={cn(getDifficultyColor(kw.difficulty.label), 'font-medium')}>
+                            <span className={cn(getDifficultyBadge(kw.difficulty.label), 'font-medium')}>
                               {kw.difficulty.score} - {kw.difficulty.label}
                             </span>
                           </div>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="px-5 py-3.5">
                           {kw.cluster ? (
-                            <span className="badge badge-outline">{kw.cluster}</span>
+                            <span className="apple-badge apple-badge-outline">{kw.cluster}</span>
                           ) : (
-                            <span className="text-white/55 text-sm">&mdash;</span>
+                            <span className="text-[#6e6e73] text-sm">&mdash;</span>
                           )}
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ))}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            </Card>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {Object.entries(clusteredKeywords).map(([cluster, keywords]) => (
-                <Card key={cluster} className="mat-card rounded-[20px]">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-base font-semibold text-white">{cluster}</CardTitle>
-                      <span className="badge badge-fill rounded-full">{keywords.length} keywords</span>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {keywords.map((kw, idx) => (
-                        <TooltipProvider key={idx}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span
-                                className="badge badge-outline cursor-default py-1.5 px-3.5 hover:bg-white/5 transition-colors"
-                              >
-                                {kw.keyword}
-                                <span className={cn(
-                                  'ml-2 inline-flex h-2 w-2 rounded-full',
-                                  getDifficultyDotColor(kw.difficulty.score)
-                                )} />
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Source: {kw.source}</p>
-                              <p>Difficulty: {kw.difficulty.score} ({kw.difficulty.label})</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <div key={cluster} className="apple-tile p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-base font-semibold text-[#f5f5f7]">{cluster}</h3>
+                    <span className="apple-badge apple-badge-fill">{keywords.length} keywords</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {keywords.map((kw, idx) => (
+                      <TooltipProvider key={idx}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="apple-badge apple-badge-outline cursor-default py-1.5 px-3.5 hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                              {kw.keyword}
+                              <span className={cn(
+                                'ml-2 inline-flex h-2 w-2 rounded-full',
+                                getDifficultyDotColor(kw.difficulty.score)
+                              )} />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Source: {kw.source}</p>
+                            <p>Difficulty: {kw.difficulty.score} ({kw.difficulty.label})</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -1038,26 +1033,22 @@ export default function SEOInsightApp() {
       )}
 
       {keywordLoading && (
-        <Card className="mat-card rounded-[20px]">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-[#64D2FF]" />
-              <p className="text-white/55">Discovering keywords across sources...</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6">
+          <div className="flex flex-col items-center justify-center py-12 gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-[#2997ff]" />
+            <p className="text-[#86868b]">Discovering keywords across sources...</p>
+          </div>
+        </div>
       )}
 
       {!keywordLoading && keywordResults.length === 0 && !keywordError && (
-        <Card className="mat-subtle border-dashed border-white/7 rounded-[20px]">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center justify-center py-12 gap-3 text-white/55">
-              <KeyRound className="h-12 w-12 opacity-30" />
-              <p className="text-lg font-medium text-white">No keywords discovered yet</p>
-              <p className="text-sm">Enter a seed keyword and click &quot;Discover&quot; to get started</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6 border-dashed" style={{ border: '1px dashed rgba(255,255,255,0.08)' }}>
+          <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#6e6e73]">
+            <KeyRound className="h-12 w-12 opacity-30" />
+            <p className="text-lg font-medium text-[#f5f5f7]">No keywords discovered yet</p>
+            <p className="text-sm">Enter a seed keyword and click &quot;Discover&quot; to get started</p>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -1067,259 +1058,245 @@ export default function SEOInsightApp() {
   const AuditTab = () => (
     <div className="space-y-8">
       <div>
-        <h2 className="text-[28px] font-bold tracking-[-0.02em] text-white">Site Audit</h2>
-        <p className="text-white/55 mt-1">Crawl and audit your website for SEO, AEO, and GEO issues</p>
+        <h2 className="apple-headline-reduced">Site Audit</h2>
+        <p className="apple-body mt-1">Crawl and audit your website for SEO, AEO, and GEO issues</p>
       </div>
 
-      <Card className="mat-card rounded-[20px]">
-        <CardHeader>
-          <CardTitle className="text-[20px] font-semibold text-white">Crawl Settings</CardTitle>
-          <CardDescription className="text-white/55">Configure your website crawl parameters</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/35" />
-              <Input
-                placeholder="Enter website URL (e.g., https://example.com)"
-                value={auditUrl}
-                onChange={(e) => setAuditUrl(e.target.value)}
-                className="pl-10 app-input text-white placeholder:text-white/30 h-11"
-                onKeyDown={(e) => e.key === 'Enter' && crawlAndAudit()}
-              />
-            </div>
-            <Button
-              onClick={crawlAndAudit}
-              disabled={crawlLoading || auditLoading || !auditUrl.trim()}
-              className="btn-primary shrink-0 px-6 h-11"
-            >
-              {crawlLoading || auditLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {crawlLoading ? 'Crawling...' : 'Auditing...'}
-                </>
-              ) : (
-                <>
-                  <Globe className="mr-2 h-4 w-4" /> Crawl &amp; Audit
-                </>
-              )}
-            </Button>
+      <div className="apple-tile p-6 space-y-6">
+        <div>
+          <h3 className="apple-callout">Crawl Settings</h3>
+          <p className="text-sm text-[#86868b] mt-1">Configure your website crawl parameters</p>
+        </div>
+        <div className="flex gap-3">
+          <div className="relative flex-1">
+            <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6e6e73]" />
+            <input
+              type="text"
+              placeholder="Enter website URL (e.g., https://example.com)"
+              value={auditUrl}
+              onChange={(e) => setAuditUrl(e.target.value)}
+              className="apple-input w-full"
+              onKeyDown={(e) => e.key === 'Enter' && crawlAndAudit()}
+            />
           </div>
+          <button
+            onClick={crawlAndAudit}
+            disabled={crawlLoading || auditLoading || !auditUrl.trim()}
+            className="apple-btn apple-btn-primary px-6 h-10 shrink-0"
+          >
+            {crawlLoading || auditLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> {crawlLoading ? 'Crawling...' : 'Auditing...'}
+              </>
+            ) : (
+              <>
+                <Globe className="h-4 w-4" /> Crawl &amp; Audit
+              </>
+            )}
+          </button>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-white font-medium">Max Pages: {maxPages[0]}</Label>
-              </div>
-              <Slider
-                value={maxPages}
-                onValueChange={setMaxPages}
-                min={5}
-                max={50}
-                step={5}
-                className="w-full [&_[role=slider]]:bg-[#0A84FF] [&_[role=slider]]:border-[#0A84FF]"
-              />
-              <div className="flex justify-between text-xs text-white/55">
-                <span>5</span>
-                <span>50</span>
-              </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-[#f5f5f7]">Max Pages: {maxPages[0]}</span>
             </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-white font-medium">Max Depth: {maxDepth[0]}</Label>
-              </div>
-              <Slider
-                value={maxDepth}
-                onValueChange={setMaxDepth}
-                min={1}
-                max={3}
-                step={1}
-                className="w-full [&_[role=slider]]:bg-[#0A84FF] [&_[role=slider]]:border-[#0A84FF]"
-              />
-              <div className="flex justify-between text-xs text-white/55">
-                <span>1</span>
-                <span>3</span>
-              </div>
+            <input
+              type="range"
+              min={5}
+              max={50}
+              step={5}
+              value={maxPages[0]}
+              onChange={(e) => setMaxPages([Number(e.target.value)])}
+              className="w-full h-1 rounded-full appearance-none bg-[rgba(255,255,255,0.08)] accent-[#0071e3] cursor-pointer
+                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0071e3] [&::-webkit-slider-thumb]:cursor-pointer"
+            />
+            <div className="flex justify-between text-xs text-[#6e6e73]">
+              <span>5</span>
+              <span>50</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-[#f5f5f7]">Max Depth: {maxDepth[0]}</span>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={3}
+              step={1}
+              value={maxDepth[0]}
+              onChange={(e) => setMaxDepth([Number(e.target.value)])}
+              className="w-full h-1 rounded-full appearance-none bg-[rgba(255,255,255,0.08)] accent-[#0071e3] cursor-pointer
+                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0071e3] [&::-webkit-slider-thumb]:cursor-pointer"
+            />
+            <div className="flex justify-between text-xs text-[#6e6e73]">
+              <span>1</span>
+              <span>3</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Progress */}
       {(crawlLoading || auditLoading) && (
-        <Card className="mat-card rounded-[20px]">
-          <CardContent className="pt-6 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-white/55">
-                {crawlLoading ? 'Crawling website...' : 'Running audit analysis...'}
-              </span>
-              <span className="font-semibold text-white">{crawlProgress}%</span>
-            </div>
-            <Progress value={crawlProgress} className="h-1.5 [&>div]:bg-[#0A84FF]" />
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6 space-y-3">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[#86868b]">
+              {crawlLoading ? 'Crawling website...' : 'Running audit analysis...'}
+            </span>
+            <span className="font-semibold text-[#f5f5f7]">{crawlProgress}%</span>
+          </div>
+          <div className="apple-progress-track h-1.5">
+            <motion.div
+              className="apple-progress-fill"
+              initial={{ width: 0 }}
+              animate={{ width: `${crawlProgress}%` }}
+              transition={{ duration: 0.4, ease: [0.4, 0, 0.6, 1] }}
+            />
+          </div>
+        </div>
       )}
 
       {auditError && (
-        <Card className="mat-card border-[#FF453A]/12 rounded-[20px]">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-white">
-              <AlertCircle className="h-5 w-5" />
-              <p>{auditError}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6" style={{ borderLeft: '3px solid #ff453a' }}>
+          <div className="flex items-center gap-2 text-[#f5f5f7]">
+            <AlertCircle className="h-5 w-5 text-[#ff453a]" />
+            <p>{auditError}</p>
+          </div>
+        </div>
       )}
 
       {/* Audit Results */}
       {auditResult && (
         <>
           {/* Score Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...pageTransition, delay: 0 }}
             >
-              <Card className="mat-card rounded-[20px]">
-                <CardContent className="pt-8 pb-8 flex flex-col items-center">
-                  <ScoreCircle score={auditResult.seo.averageScore} size={140} label="SEO Score" />
-                </CardContent>
-              </Card>
+              <div className="apple-tile p-8 flex flex-col items-center">
+                <ScoreCircle score={auditResult.seo.averageScore} size={140} label="SEO Score" />
+              </div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...pageTransition, delay: 0.08 }}
             >
-              <Card className="mat-card rounded-[20px]">
-                <CardContent className="pt-8 pb-8 flex flex-col items-center">
-                  <ScoreCircle
-                    score={Math.round(auditResult.aeo.reduce((s, a) => s + a.aeoScore, 0) / Math.max(auditResult.aeo.length, 1))}
-                    size={140}
-                    label="AEO Score"
-                  />
-                </CardContent>
-              </Card>
+              <div className="apple-tile p-8 flex flex-col items-center">
+                <ScoreCircle
+                  score={Math.round(auditResult.aeo.reduce((s, a) => s + a.aeoScore, 0) / Math.max(auditResult.aeo.length, 1))}
+                  size={140}
+                  label="AEO Score"
+                />
+              </div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...pageTransition, delay: 0.16 }}
             >
-              <Card className="mat-card rounded-[20px]">
-                <CardContent className="pt-8 pb-8 flex flex-col items-center">
-                  <ScoreCircle
-                    score={Math.round(auditResult.geo.reduce((s, g) => s + g.geoScore, 0) / Math.max(auditResult.geo.length, 1))}
-                    size={140}
-                    label="GEO Score"
-                  />
-                </CardContent>
-              </Card>
+              <div className="apple-tile p-8 flex flex-col items-center">
+                <ScoreCircle
+                  score={Math.round(auditResult.geo.reduce((s, g) => s + g.geoScore, 0) / Math.max(auditResult.geo.length, 1))}
+                  size={140}
+                  label="GEO Score"
+                />
+              </div>
             </motion.div>
           </div>
 
           {/* Crawl Summary */}
           {crawlResult && (
-            <Card className="mat-card rounded-[20px]">
-              <CardHeader>
-                <CardTitle className="text-[20px] font-semibold flex items-center gap-2 text-white">
-                  <FileSearch className="h-5 w-5 text-[#64D2FF]" />
-                  Crawl Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="text-center p-4 rounded-[12px] fill-3">
-                    <p className="text-2xl font-bold text-white">{crawlResult.totalPages}</p>
-                    <p className="text-xs text-white/55">Pages Crawled</p>
-                  </div>
-                  <div className="text-center p-4 rounded-[12px] fill-3">
-                    <p className="text-2xl font-bold text-white">{crawlResult.errors.length}</p>
-                    <p className="text-xs text-white/55">Crawl Errors</p>
-                  </div>
-                  <div className="text-center p-4 rounded-[12px] fill-blue-3">
-                    <p className="text-2xl font-bold text-white">{auditResult.seo.siteWideIssues.filter((i) => i.type === 'error').length}</p>
-                    <p className="text-xs text-white/55">SEO Errors</p>
-                  </div>
-                  <div className="text-center p-4 rounded-[12px] fill-3">
-                    <p className="text-2xl font-bold text-white">{auditResult.seo.siteWideIssues.filter((i) => i.type === 'warning').length}</p>
-                    <p className="text-xs text-white/55">SEO Warnings</p>
-                  </div>
+            <div className="apple-tile p-6">
+              <h3 className="apple-callout flex items-center gap-2 mb-4">
+                <FileSearch className="h-5 w-5 text-[#2997ff]" />
+                Crawl Summary
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="apple-stat">
+                  <p className="apple-stat-value">{crawlResult.totalPages}</p>
+                  <p className="apple-stat-label">Pages Crawled</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="apple-stat">
+                  <p className="apple-stat-value">{crawlResult.errors.length}</p>
+                  <p className="apple-stat-label">Crawl Errors</p>
+                </div>
+                <div className="apple-stat" style={{ background: 'rgba(0,113,227,0.08)' }}>
+                  <p className="apple-stat-value">{auditResult.seo.siteWideIssues.filter((i) => i.type === 'error').length}</p>
+                  <p className="apple-stat-label">SEO Errors</p>
+                </div>
+                <div className="apple-stat">
+                  <p className="apple-stat-value">{auditResult.seo.siteWideIssues.filter((i) => i.type === 'warning').length}</p>
+                  <p className="apple-stat-label">SEO Warnings</p>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Top Issues */}
           {auditResult.seo.siteWideIssues.length > 0 && (
-            <Card className="mat-card rounded-[20px]">
-              <CardHeader>
-                <CardTitle className="text-[20px] font-semibold flex items-center gap-2 text-white">
-                  <AlertTriangle className="h-5 w-5 text-white/55" />
-                  Top Site-Wide Issues
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="max-h-64">
-                  <div className="space-y-3">
-                    {auditResult.seo.siteWideIssues.slice(0, 10).map((issue, idx) => (
-                      <div key={idx} className="flex items-start gap-3 p-4 rounded-[12px] fill-3">
-                        <div className="mt-0.5 shrink-0">{getIssueBadge(issue.type)}</div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-sm text-white">{issue.message}</p>
-                          <p className="text-xs text-white/55 mt-1">{issue.detail}</p>
-                          <span className="badge badge-outline mt-1.5 text-xs">{issue.category}</span>
-                        </div>
+            <div className="apple-tile p-6">
+              <h3 className="apple-callout flex items-center gap-2 mb-4">
+                <AlertTriangle className="h-5 w-5 text-[#86868b]" />
+                Top Site-Wide Issues
+              </h3>
+              <div className="max-h-64 overflow-y-auto apple-scrollbar">
+                <div className="space-y-3">
+                  {auditResult.seo.siteWideIssues.slice(0, 10).map((issue, idx) => (
+                    <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-[rgba(255,255,255,0.04)]">
+                      <div className="mt-0.5 shrink-0">{getIssueBadge(issue.type)}</div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm text-[#f5f5f7]">{issue.message}</p>
+                        <p className="text-xs text-[#86868b] mt-1">{issue.detail}</p>
+                        <span className="apple-badge apple-badge-outline mt-1.5 text-xs">{issue.category}</span>
                       </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Top Suggestions */}
           {auditResult.seo.topSuggestions.length > 0 && (
-            <Card className="mat-card rounded-[20px]">
-              <CardHeader>
-                <CardTitle className="text-[20px] font-semibold flex items-center gap-2 text-white">
-                  <Lightbulb className="h-5 w-5 text-[#64D2FF]" />
-                  Top Suggestions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2.5">
-                  {auditResult.seo.topSuggestions.map((suggestion, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-2">
-                      <ChevronRight className="h-4 w-4 text-[#64D2FF] mt-0.5 shrink-0" />
-                      <p className="text-sm text-white">{suggestion}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="apple-tile p-6">
+              <h3 className="apple-callout flex items-center gap-2 mb-4">
+                <Lightbulb className="h-5 w-5 text-[#2997ff]" />
+                Top Suggestions
+              </h3>
+              <div className="space-y-2.5">
+                {auditResult.seo.topSuggestions.map((suggestion, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-2">
+                    <ChevronRight className="h-4 w-4 text-[#2997ff] mt-0.5 shrink-0" />
+                    <p className="text-sm text-[#f5f5f7]">{suggestion}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           {/* Per-Page Results */}
-          <Card className="mat-card rounded-[20px]">
-            <CardHeader>
-              <CardTitle className="text-[20px] font-semibold flex items-center gap-2 text-white">
-                <FileText className="h-5 w-5 text-[#64D2FF]" />
-                Page-by-Page Results
-              </CardTitle>
-              <CardDescription className="text-white/55">Click on a page to see detailed analysis</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          <div className="apple-tile p-6">
+            <h3 className="apple-callout flex items-center gap-2 mb-1">
+              <FileText className="h-5 w-5 text-[#2997ff]" />
+              Page-by-Page Results
+            </h3>
+            <p className="text-sm text-[#86868b] mb-4">Click on a page to see detailed analysis</p>
+            <div className="space-y-3">
               {auditResult.seo.pageResults.map((page) => {
                 const aeoData = auditResult.aeo.find((a) => a.url === page.url);
                 const geoData = auditResult.geo.find((g) => g.url === page.url);
                 const isExpanded = expandedPages.has(page.url);
 
                 return (
-                  <div key={page.url} className="border border-white/7 rounded-[12px] overflow-hidden">
+                  <div key={page.url} className="rounded-xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
                     <button
                       onClick={() => togglePageExpand(page.url)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-left"
+                      className="w-full flex items-center justify-between p-4 hover:bg-[rgba(255,255,255,0.03)] transition-colors text-left"
                     >
                       <div className="flex items-center gap-4 min-w-0 flex-1">
                         <div className="flex items-center gap-3 shrink-0">
@@ -1328,30 +1305,30 @@ export default function SEOInsightApp() {
                           {geoData && <ScoreCircle score={geoData.geoScore} size={50} />}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-sm truncate text-white">{page.url}</p>
+                          <p className="font-medium text-sm truncate text-[#f5f5f7]">{page.url}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="badge badge-outline text-xs">SEO: {page.seoScore}</span>
-                            {aeoData && <span className="badge badge-outline text-xs">AEO: {aeoData.aeoScore}</span>}
-                            {geoData && <span className="badge badge-outline text-xs">GEO: {geoData.geoScore}</span>}
-                            <span className="badge badge-fill text-xs">
+                            <span className="apple-badge apple-badge-outline text-xs">SEO: {page.seoScore}</span>
+                            {aeoData && <span className="apple-badge apple-badge-outline text-xs">AEO: {aeoData.aeoScore}</span>}
+                            {geoData && <span className="apple-badge apple-badge-outline text-xs">GEO: {geoData.geoScore}</span>}
+                            <span className="apple-badge apple-badge-fill text-xs">
                               {page.issues.length} issues
                             </span>
                           </div>
                         </div>
                       </div>
                       {isExpanded ? (
-                        <ChevronUp className="h-5 w-5 text-white/55 shrink-0" />
+                        <ChevronUp className="h-5 w-5 text-[#6e6e73] shrink-0" />
                       ) : (
-                        <ChevronDown className="h-5 w-5 text-white/55 shrink-0" />
+                        <ChevronDown className="h-5 w-5 text-[#6e6e73] shrink-0" />
                       )}
                     </button>
 
                     {isExpanded && (
-                      <div className="border-t border-white/7 p-5 space-y-6 bg-white/3">
+                      <div className="border-t border-[rgba(255,255,255,0.06)] p-5 space-y-6 bg-[rgba(255,255,255,0.02)]">
                         {/* Category Scores */}
                         <div>
-                          <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-white">
-                            <Gauge className="h-4 w-4 text-[#64D2FF]" /> SEO Category Scores
+                          <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-[#f5f5f7]">
+                            <Gauge className="h-4 w-4 text-[#2997ff]" /> SEO Category Scores
                           </h4>
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {Object.entries(page.categoryScores).map(([cat, score]) => (
@@ -1363,36 +1340,36 @@ export default function SEOInsightApp() {
                         {/* Issues */}
                         {page.issues.length > 0 && (
                           <div>
-                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-white">
-                              <AlertTriangle className="h-4 w-4 text-white/55" /> Issues ({page.issues.length})
+                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-[#f5f5f7]">
+                              <AlertTriangle className="h-4 w-4 text-[#86868b]" /> Issues ({page.issues.length})
                             </h4>
-                            <ScrollArea className="max-h-64">
+                            <div className="max-h-64 overflow-y-auto apple-scrollbar">
                               <div className="space-y-2">
                                 {page.issues.map((issue, idx) => (
-                                  <div key={idx} className="flex items-start gap-2 p-3 rounded-[12px] mat-subtle text-sm">
+                                  <div key={idx} className="flex items-start gap-2 p-3 rounded-xl bg-[rgba(255,255,255,0.03)] text-sm">
                                     <div className="shrink-0 mt-0.5">{getIssueBadge(issue.type)}</div>
                                     <div>
-                                      <p className="font-medium text-white">{issue.message}</p>
-                                      <p className="text-xs text-white/55">{issue.detail}</p>
+                                      <p className="font-medium text-[#f5f5f7]">{issue.message}</p>
+                                      <p className="text-xs text-[#86868b]">{issue.detail}</p>
                                     </div>
                                   </div>
                                 ))}
                               </div>
-                            </ScrollArea>
+                            </div>
                           </div>
                         )}
 
                         {/* Suggestions */}
                         {page.suggestions.length > 0 && (
                           <div>
-                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-white">
-                              <Lightbulb className="h-4 w-4 text-[#64D2FF]" /> Suggestions
+                            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-[#f5f5f7]">
+                              <Lightbulb className="h-4 w-4 text-[#2997ff]" /> Suggestions
                             </h4>
                             <div className="space-y-1.5">
                               {page.suggestions.map((s, idx) => (
                                 <div key={idx} className="flex items-start gap-2 text-sm">
-                                  <ChevronRight className="h-4 w-4 text-[#64D2FF] mt-0.5 shrink-0" />
-                                  <span className="text-white">{s}</span>
+                                  <ChevronRight className="h-4 w-4 text-[#2997ff] mt-0.5 shrink-0" />
+                                  <span className="text-[#f5f5f7]">{s}</span>
                                 </div>
                               ))}
                             </div>
@@ -1403,29 +1380,29 @@ export default function SEOInsightApp() {
                           {/* AEO Details */}
                           {aeoData && (
                             <div>
-                              <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-white">
-                                <Bot className="h-4 w-4 text-[#64D2FF]" /> AEO Analysis
+                              <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-[#f5f5f7]">
+                                <Bot className="h-4 w-4 text-[#2997ff]" /> AEO Analysis
                               </h4>
                               <div className="space-y-3">
                                 <ReadinessChecklist items={aeoData.answerReadiness} />
                                 {aeoData.strengths.length > 0 && (
                                   <div>
-                                    <p className="text-xs font-medium text-[#64D2FF] mb-1.5">Strengths</p>
+                                    <p className="text-xs font-medium text-[#2997ff] mb-1.5">Strengths</p>
                                     {aeoData.strengths.map((s, i) => (
                                       <div key={i} className="flex items-start gap-2 text-xs">
-                                        <CheckCircle2 className="h-3 w-3 text-[#0A84FF] mt-0.5 shrink-0" />
-                                        <span className="text-white">{s}</span>
+                                        <CheckCircle2 className="h-3 w-3 text-[#0071e3] mt-0.5 shrink-0" />
+                                        <span className="text-[#f5f5f7]">{s}</span>
                                       </div>
                                     ))}
                                   </div>
                                 )}
                                 {aeoData.recommendations.length > 0 && (
                                   <div>
-                                    <p className="text-xs font-medium text-white/55 mb-1.5">Recommendations</p>
+                                    <p className="text-xs font-medium text-[#86868b] mb-1.5">Recommendations</p>
                                     {aeoData.recommendations.map((r, i) => (
                                       <div key={i} className="flex items-start gap-2 text-xs">
-                                        <ArrowUpRight className="h-3 w-3 text-white/55 mt-0.5 shrink-0" />
-                                        <span className="text-white">{r}</span>
+                                        <ArrowUpRight className="h-3 w-3 text-[#86868b] mt-0.5 shrink-0" />
+                                        <span className="text-[#f5f5f7]">{r}</span>
                                       </div>
                                     ))}
                                   </div>
@@ -1437,29 +1414,29 @@ export default function SEOInsightApp() {
                           {/* GEO Details */}
                           {geoData && (
                             <div>
-                              <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-white">
-                                <Brain className="h-4 w-4 text-[#64D2FF]" /> GEO Analysis
+                              <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-[#f5f5f7]">
+                                <Brain className="h-4 w-4 text-[#2997ff]" /> GEO Analysis
                               </h4>
                               <div className="space-y-3">
                                 <ReadinessChecklist items={geoData.generativeReadiness} />
                                 {geoData.strengths.length > 0 && (
                                   <div>
-                                    <p className="text-xs font-medium text-[#64D2FF] mb-1.5">Strengths</p>
+                                    <p className="text-xs font-medium text-[#2997ff] mb-1.5">Strengths</p>
                                     {geoData.strengths.map((s, i) => (
                                       <div key={i} className="flex items-start gap-2 text-xs">
-                                        <CheckCircle2 className="h-3 w-3 text-[#0A84FF] mt-0.5 shrink-0" />
-                                        <span className="text-white">{s}</span>
+                                        <CheckCircle2 className="h-3 w-3 text-[#0071e3] mt-0.5 shrink-0" />
+                                        <span className="text-[#f5f5f7]">{s}</span>
                                       </div>
                                     ))}
                                   </div>
                                 )}
                                 {geoData.recommendations.length > 0 && (
                                   <div>
-                                    <p className="text-xs font-medium text-white/55 mb-1.5">Recommendations</p>
+                                    <p className="text-xs font-medium text-[#86868b] mb-1.5">Recommendations</p>
                                     {geoData.recommendations.map((r, i) => (
                                       <div key={i} className="flex items-start gap-2 text-xs">
-                                        <ArrowUpRight className="h-3 w-3 text-white/55 mt-0.5 shrink-0" />
-                                        <span className="text-white">{r}</span>
+                                        <ArrowUpRight className="h-3 w-3 text-[#86868b] mt-0.5 shrink-0" />
+                                        <span className="text-[#f5f5f7]">{r}</span>
                                       </div>
                                     ))}
                                   </div>
@@ -1473,21 +1450,19 @@ export default function SEOInsightApp() {
                   </div>
                 );
               })}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </>
       )}
 
       {!crawlLoading && !auditLoading && !auditResult && !auditError && (
-        <Card className="mat-subtle border-dashed border-white/7 rounded-[20px]">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center justify-center py-12 gap-3 text-white/55">
-              <Globe className="h-12 w-12 opacity-30" />
-              <p className="text-lg font-medium text-white">No audit results yet</p>
-              <p className="text-sm">Enter a website URL and click &quot;Crawl &amp; Audit&quot; to get started</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6" style={{ border: '1px dashed rgba(255,255,255,0.08)' }}>
+          <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#6e6e73]">
+            <Globe className="h-12 w-12 opacity-30" />
+            <p className="text-lg font-medium text-[#f5f5f7]">No audit results yet</p>
+            <p className="text-sm">Enter a website URL and click &quot;Crawl &amp; Audit&quot; to get started</p>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -1497,358 +1472,317 @@ export default function SEOInsightApp() {
   const SerpTab = () => (
     <div className="space-y-8">
       <div>
-        <h2 className="text-[28px] font-bold tracking-[-0.02em] text-white">SERP &amp; Competitor Analysis</h2>
-        <p className="text-white/55 mt-1">Analyze search results, discover patterns, and build backlink strategies</p>
+        <h2 className="apple-headline-reduced">SERP &amp; Competitor Analysis</h2>
+        <p className="apple-body mt-1">Analyze search results, discover patterns, and build backlink strategies</p>
       </div>
 
-      <Card className="mat-card rounded-[20px]">
-        <CardHeader>
-          <CardTitle className="text-[20px] font-semibold text-white">SERP Analysis</CardTitle>
-          <CardDescription className="text-white/55">Enter a keyword to analyze search engine results</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/35" />
-              <Input
-                placeholder="Enter a keyword (e.g., 'best seo tools')"
-                value={serpKeyword}
-                onChange={(e) => setSerpKeyword(e.target.value)}
-                className="pl-10 app-input text-white placeholder:text-white/30 h-11"
-                onKeyDown={(e) => e.key === 'Enter' && analyzeSerp()}
-              />
-            </div>
-            <Button
-              onClick={analyzeSerp}
-              disabled={serpLoading || !serpKeyword.trim()}
-              className="btn-primary shrink-0 px-6 h-11"
-            >
-              {serpLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...
-                </>
-              ) : (
-                <>
-                  <Search className="mr-2 h-4 w-4" /> Analyze SERP
-                </>
-              )}
-            </Button>
+      <div className="apple-tile p-6">
+        <h3 className="apple-callout mb-1">SERP Analysis</h3>
+        <p className="text-sm text-[#86868b] mb-4">Enter a keyword to analyze search engine results</p>
+        <div className="flex gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6e6e73]" />
+            <input
+              type="text"
+              placeholder="Enter a keyword (e.g., 'best seo tools')"
+              value={serpKeyword}
+              onChange={(e) => setSerpKeyword(e.target.value)}
+              className="apple-input w-full"
+              onKeyDown={(e) => e.key === 'Enter' && analyzeSerp()}
+            />
           </div>
-        </CardContent>
-      </Card>
+          <button
+            onClick={analyzeSerp}
+            disabled={serpLoading || !serpKeyword.trim()}
+            className="apple-btn apple-btn-primary px-6 h-10 shrink-0"
+          >
+            {serpLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Analyzing...
+              </>
+            ) : (
+              <>
+                <Search className="h-4 w-4" /> Analyze SERP
+              </>
+            )}
+          </button>
+        </div>
+      </div>
 
       {serpError && (
-        <Card className="mat-card border-[#FF453A]/12 rounded-[20px]">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-white">
-              <AlertCircle className="h-5 w-5" />
-              <p>{serpError}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6" style={{ borderLeft: '3px solid #ff453a' }}>
+          <div className="flex items-center gap-2 text-[#f5f5f7]">
+            <AlertCircle className="h-5 w-5 text-[#ff453a]" />
+            <p>{serpError}</p>
+          </div>
+        </div>
       )}
 
       {serpLoading && (
-        <Card className="mat-card rounded-[20px]">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-[#64D2FF]" />
-              <p className="text-white/55">Analyzing search results...</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6">
+          <div className="flex flex-col items-center justify-center py-12 gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-[#2997ff]" />
+            <p className="text-[#86868b]">Analyzing search results...</p>
+          </div>
+        </div>
       )}
 
       {serpResult && (
         <>
           {/* SERP Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Result Type Breakdown */}
-            <Card className="mat-card rounded-[20px]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                  <BarChart3 className="h-4 w-4 text-[#64D2FF]" /> Result Types
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {Object.entries(serpResult.resultTypeBreakdown).map(([type, count]) => (
-                    <div key={type} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">{getResultTypeBadge(type)}</div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 h-1.5 rounded-full bg-white/6 overflow-hidden">
-                          <motion.div
-                            className="h-full rounded-full bg-[#0A84FF]"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${(count / serpResult.results.length) * 100}%` }}
-                            transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium w-6 text-right text-white">{count}</span>
+            <div className="apple-tile p-5">
+              <h3 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-3">
+                <BarChart3 className="h-4 w-4 text-[#2997ff]" /> Result Types
+              </h3>
+              <div className="space-y-3">
+                {Object.entries(serpResult.resultTypeBreakdown).map(([type, count]) => (
+                  <div key={type} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">{getResultTypeBadge(type)}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 apple-progress-track">
+                        <motion.div
+                          className="apple-progress-fill"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(count / serpResult.results.length) * 100}%` }}
+                          transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                        />
                       </div>
+                      <span className="text-sm font-medium w-6 text-right text-[#f5f5f7]">{count}</span>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Featured Snippet */}
-            <Card className="mat-card rounded-[20px]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                  <Eye className="h-4 w-4 text-[#64D2FF]" /> Featured Snippet
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {serpResult.featuredSnippet ? (
-                  <div className="space-y-2">
-                    <p className="font-medium text-sm text-white">{serpResult.featuredSnippet.title}</p>
-                    <p className="text-xs text-white/55 line-clamp-3">{serpResult.featuredSnippet.snippet}</p>
-                    <a
-                      href={serpResult.featuredSnippet.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-[#64D2FF] hover:underline flex items-center gap-1"
-                    >
-                      {serpResult.featuredSnippet.url.substring(0, 40)}...
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                ) : (
-                  <p className="text-sm text-white/55">No featured snippet found for this query.</p>
-                )}
-              </CardContent>
-            </Card>
+            <div className="apple-tile p-5">
+              <h3 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-3">
+                <Eye className="h-4 w-4 text-[#2997ff]" /> Featured Snippet
+              </h3>
+              {serpResult.featuredSnippet ? (
+                <div className="space-y-2">
+                  <p className="font-medium text-sm text-[#f5f5f7]">{serpResult.featuredSnippet.title}</p>
+                  <p className="text-xs text-[#86868b] line-clamp-3">{serpResult.featuredSnippet.snippet}</p>
+                  <a
+                    href={serpResult.featuredSnippet.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="apple-link text-xs"
+                  >
+                    {serpResult.featuredSnippet.url.substring(0, 40)}...
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              ) : (
+                <p className="text-sm text-[#86868b]">No featured snippet found for this query.</p>
+              )}
+            </div>
 
             {/* Common Words */}
-            <Card className="mat-card rounded-[20px]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                  <MessageSquare className="h-4 w-4 text-white/55" /> Common Title Words
-                </CardTitle>
-                <CardDescription className="text-white/55">Avg title word count: {serpResult.avgWordCountInTitles}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-1.5">
-                  {serpResult.commonTitleWords.map((word) => (
-                    <span key={word} className="badge badge-fill text-xs">{word}</span>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="apple-tile p-5">
+              <h3 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-1">
+                <MessageSquare className="h-4 w-4 text-[#86868b]" /> Common Title Words
+              </h3>
+              <p className="text-xs text-[#86868b] mb-3">Avg title word count: {serpResult.avgWordCountInTitles}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {serpResult.commonTitleWords.map((word) => (
+                  <span key={word} className="apple-badge apple-badge-fill text-xs">{word}</span>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Search Results Table */}
-          <Card className="mat-card rounded-[20px]">
-            <CardHeader>
-              <CardTitle className="text-[20px] font-semibold flex items-center gap-2 text-white">
-                <FileSearch className="h-5 w-5 text-[#64D2FF]" /> Search Results
-              </CardTitle>
-              <CardDescription className="text-white/55">{serpResult.results.length} results found for &quot;{serpResult.keyword}&quot;</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="max-h-[500px]">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="fill-3 hover:fill-3">
-                      <TableHead className="w-12 text-white/55 font-medium">#</TableHead>
-                      <TableHead className="text-white/55 font-medium">Title &amp; Snippet</TableHead>
-                      <TableHead className="w-24 text-white/55 font-medium">Type</TableHead>
-                      <TableHead className="w-12 text-white/55 font-medium">Feat.</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {serpResult.results.map((result) => (
-                      <TableRow key={result.position} className="hover:bg-white/5 transition-colors border-white/6">
-                        <TableCell className="font-semibold text-center text-[#64D2FF]">{result.position}</TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            <a
-                              href={result.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-medium text-sm text-[#64D2FF] hover:underline flex items-center gap-1"
-                            >
-                              {result.title}
-                              <ExternalLink className="h-3 w-3 shrink-0" />
-                            </a>
-                            <p className="text-xs text-white/55">{result.url.substring(0, 60)}...</p>
-                            <p className="text-xs text-white/55 line-clamp-2">{result.snippet}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>{getResultTypeBadge(result.resultType)}</TableCell>
-                        <TableCell className="text-center">
-                          {result.isFeatured ? (
-                            <CheckCircle2 className="h-4 w-4 text-[#0A84FF] mx-auto" />
-                          ) : (
-                            <span className="text-white/20">&mdash;</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            </CardContent>
-          </Card>
+          <div className="apple-tile overflow-hidden">
+            <div className="p-5 pb-3">
+              <h3 className="apple-callout flex items-center gap-2">
+                <FileSearch className="h-5 w-5 text-[#2997ff]" /> Search Results
+              </h3>
+              <p className="text-sm text-[#86868b] mt-1">{serpResult.results.length} results found for &quot;{serpResult.keyword}&quot;</p>
+            </div>
+            <div className="max-h-[500px] overflow-y-auto apple-scrollbar">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[rgba(255,255,255,0.06)]">
+                    <th className="w-12 text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">#</th>
+                    <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Title &amp; Snippet</th>
+                    <th className="w-24 text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Type</th>
+                    <th className="w-12 text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Feat.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {serpResult.results.map((result) => (
+                    <tr key={result.position} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+                      <td className="px-5 py-3.5 font-semibold text-center text-[#2997ff]">{result.position}</td>
+                      <td className="px-5 py-3.5">
+                        <div className="space-y-1">
+                          <a
+                            href={result.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-sm text-[#2997ff] hover:underline flex items-center gap-1"
+                          >
+                            {result.title}
+                            <ExternalLink className="h-3 w-3 shrink-0" />
+                          </a>
+                          <p className="text-xs text-[#6e6e73]">{result.url.substring(0, 60)}...</p>
+                          <p className="text-xs text-[#86868b] line-clamp-2">{result.snippet}</p>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5">{getResultTypeBadge(result.resultType)}</td>
+                      <td className="px-5 py-3.5 text-center">
+                        {result.isFeatured ? (
+                          <CheckCircle2 className="h-4 w-4 text-[#0071e3] mx-auto" />
+                        ) : (
+                          <span className="text-[#424245]">&mdash;</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-          <div className="sep" />
+          <div className="apple-sep" />
 
           {/* Pattern & Backlink Actions */}
           <div className="flex flex-wrap gap-3">
-            <Button
+            <button
               onClick={analyzePatterns}
               disabled={patternLoading}
-              variant="outline"
-              className="btn-secondary px-6 h-11"
+              className="apple-btn apple-btn-secondary px-6 h-10"
             >
               {patternLoading ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing Patterns...</>
+                <><Loader2 className="h-4 w-4 animate-spin" /> Analyzing Patterns...</>
               ) : (
-                <><Brain className="mr-2 h-4 w-4" /> Analyze Patterns</>
+                <><Brain className="h-4 w-4" /> Analyze Patterns</>
               )}
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={generateBacklinks}
               disabled={backlinkLoading}
-              variant="outline"
-              className="btn-secondary px-6 h-11"
+              className="apple-btn apple-btn-secondary px-6 h-10"
             >
               {backlinkLoading ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Strategy...</>
+                <><Loader2 className="h-4 w-4 animate-spin" /> Generating Strategy...</>
               ) : (
-                <><Link2 className="mr-2 h-4 w-4" /> Generate Backlink Strategy</>
+                <><Link2 className="h-4 w-4" /> Generate Backlink Strategy</>
               )}
-            </Button>
+            </button>
           </div>
 
           {/* Pattern Analysis Results */}
           {patternResult && (
             <div className="space-y-5">
-              <h3 className="text-[22px] font-bold tracking-[-0.01em] flex items-center gap-2 text-white">
-                <Brain className="h-5 w-5 text-[#64D2FF]" /> Pattern Analysis
+              <h3 className="text-[22px] font-semibold tracking-[-0.01em] flex items-center gap-2 text-[#f5f5f7]">
+                <Brain className="h-5 w-5 text-[#2997ff]" /> Pattern Analysis
               </h3>
 
               {/* Insights Table */}
-              <Card className="mat-card rounded-[20px]">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold text-white">Insights</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="max-h-64">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="fill-3 hover:fill-3">
-                          <TableHead className="text-white/55 font-medium">Metric</TableHead>
-                          <TableHead className="text-white/55 font-medium">Top Ranking Avg</TableHead>
-                          <TableHead className="text-white/55 font-medium">Your Value</TableHead>
-                          <TableHead className="text-white/55 font-medium">Status</TableHead>
-                          <TableHead className="text-white/55 font-medium">Recommendation</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {patternResult.insights.map((insight, idx) => (
-                          <TableRow key={idx} className="hover:bg-white/5 transition-colors border-white/6">
-                            <TableCell className="font-medium text-sm text-white">{insight.metric}</TableCell>
-                            <TableCell className="text-sm text-white">{String(insight.topRankingAvg)}</TableCell>
-                            <TableCell className="text-sm text-white">{String(insight.yourValue)}</TableCell>
-                            <TableCell>
-                              <span className={insight.status === 'good' ? 'badge badge-blue' : insight.status === 'improve' ? 'badge badge-orange' : 'badge badge-red'}>
-                                {insight.status}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-xs text-white/55 max-w-[200px]">{insight.recommendation}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+              <div className="apple-tile overflow-hidden">
+                <div className="p-5 pb-3">
+                  <h4 className="text-base font-semibold text-[#f5f5f7]">Insights</h4>
+                </div>
+                <div className="max-h-64 overflow-y-auto apple-scrollbar">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-[rgba(255,255,255,0.06)]">
+                        <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Metric</th>
+                        <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Top Ranking Avg</th>
+                        <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Your Value</th>
+                        <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Status</th>
+                        <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Recommendation</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {patternResult.insights.map((insight, idx) => (
+                        <tr key={idx} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+                          <td className="px-5 py-3 font-medium text-sm text-[#f5f5f7]">{insight.metric}</td>
+                          <td className="px-5 py-3 text-sm text-[#f5f5f7]">{String(insight.topRankingAvg)}</td>
+                          <td className="px-5 py-3 text-sm text-[#f5f5f7]">{String(insight.yourValue)}</td>
+                          <td className="px-5 py-3">
+                            <span className={insight.status === 'good' ? 'apple-badge apple-badge-blue' : insight.status === 'improve' ? 'apple-badge apple-badge-orange' : 'apple-badge apple-badge-red'}>
+                              {insight.status}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3 text-xs text-[#86868b] max-w-[200px]">{insight.recommendation}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Must Add */}
                 {patternResult.mustAdd.length > 0 && (
-                  <Card className="mat-card rounded-[20px]">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                        <CheckCircle2 className="h-4 w-4 text-[#64D2FF]" /> Must Add
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {patternResult.mustAdd.map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-sm">
-                            <ChevronRight className="h-4 w-4 text-[#64D2FF] mt-0.5 shrink-0" />
-                            <span className="text-white">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="apple-tile p-5">
+                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-3">
+                      <CheckCircle2 className="h-4 w-4 text-[#2997ff]" /> Must Add
+                    </h4>
+                    <div className="space-y-2">
+                      {patternResult.mustAdd.map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-sm">
+                          <ChevronRight className="h-4 w-4 text-[#2997ff] mt-0.5 shrink-0" />
+                          <span className="text-[#f5f5f7]">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {/* Missing Items */}
                 {patternResult.youAreMissing.length > 0 && (
-                  <Card className="mat-card rounded-[20px]">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                        <XCircle className="h-4 w-4 text-white/55" /> You Are Missing
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {patternResult.youAreMissing.map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-sm">
-                            <XCircle className="h-4 w-4 text-white/12 mt-0.5 shrink-0" />
-                            <span className="text-white">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="apple-tile p-5">
+                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-3">
+                      <XCircle className="h-4 w-4 text-[#86868b]" /> You Are Missing
+                    </h4>
+                    <div className="space-y-2">
+                      {patternResult.youAreMissing.map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-sm">
+                          <XCircle className="h-4 w-4 text-[#424245] mt-0.5 shrink-0" />
+                          <span className="text-[#f5f5f7]">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {/* Content Gaps */}
                 {patternResult.contentGapAnalysis.length > 0 && (
-                  <Card className="mat-card rounded-[20px]">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                        <Target className="h-4 w-4 text-white/55" /> Content Gap Analysis
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {patternResult.contentGapAnalysis.map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-sm">
-                            <AlertTriangle className="h-4 w-4 text-white/55 mt-0.5 shrink-0" />
-                            <span className="text-white">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="apple-tile p-5">
+                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-3">
+                      <Target className="h-4 w-4 text-[#86868b]" /> Content Gap Analysis
+                    </h4>
+                    <div className="space-y-2">
+                      {patternResult.contentGapAnalysis.map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-sm">
+                          <AlertTriangle className="h-4 w-4 text-[#86868b] mt-0.5 shrink-0" />
+                          <span className="text-[#f5f5f7]">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {/* Competitive Advantage */}
                 {patternResult.competitiveAdvantage.length > 0 && (
-                  <Card className="mat-card rounded-[20px]">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                        <TrendingUp className="h-4 w-4 text-[#64D2FF]" /> Competitive Advantage
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {patternResult.competitiveAdvantage.map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-sm">
-                            <ThumbsUp className="h-4 w-4 text-[#64D2FF] mt-0.5 shrink-0" />
-                            <span className="text-white">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="apple-tile p-5">
+                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-3">
+                      <TrendingUp className="h-4 w-4 text-[#2997ff]" /> Competitive Advantage
+                    </h4>
+                    <div className="space-y-2">
+                      {patternResult.competitiveAdvantage.map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-sm">
+                          <ThumbsUp className="h-4 w-4 text-[#2997ff] mt-0.5 shrink-0" />
+                          <span className="text-[#f5f5f7]">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -1857,128 +1791,118 @@ export default function SEOInsightApp() {
           {/* Backlink Strategy Results */}
           {backlinkResult && (
             <div className="space-y-5">
-              <h3 className="text-[22px] font-bold tracking-[-0.01em] flex items-center gap-2 text-white">
-                <Link2 className="h-5 w-5 text-[#64D2FF]" /> Backlink Strategy
+              <h3 className="text-[22px] font-semibold tracking-[-0.01em] flex items-center gap-2 text-[#f5f5f7]">
+                <Link2 className="h-5 w-5 text-[#2997ff]" /> Backlink Strategy
               </h3>
 
               {/* Opportunities Table */}
-              <Card className="mat-card rounded-[20px]">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold text-white">Opportunities ({backlinkResult.opportunities.length})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="max-h-[400px]">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="fill-3 hover:fill-3">
-                          <TableHead className="text-white/55 font-medium">Title</TableHead>
-                          <TableHead className="w-24 text-white/55 font-medium">Type</TableHead>
-                          <TableHead className="w-24 text-white/55 font-medium">Priority</TableHead>
-                          <TableHead className="text-white/55 font-medium">Strategy</TableHead>
-                          <TableHead className="text-white/55 font-medium">Content Idea</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {backlinkResult.opportunities.map((opp, idx) => (
-                          <TableRow key={idx} className="hover:bg-white/5 transition-colors border-white/6">
-                            <TableCell>
-                              <div>
-                                <a
-                                  href={opp.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="font-medium text-sm text-[#64D2FF] hover:underline flex items-center gap-1"
-                                >
-                                  {opp.title}
-                                  <ExternalLink className="h-3 w-3 shrink-0" />
-                                </a>
-                                <p className="text-xs text-white/55 truncate max-w-[200px]">{opp.url}</p>
-                              </div>
-                            </TableCell>
-                            <TableCell>{getResultTypeBadge(opp.type)}</TableCell>
-                            <TableCell>{getPriorityBadge(opp.priority)}</TableCell>
-                            <TableCell className="text-xs text-white/55 max-w-[200px]">{opp.outreachStrategy}</TableCell>
-                            <TableCell className="text-xs text-white/55 max-w-[200px]">{opp.contentIdea}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+              <div className="apple-tile overflow-hidden">
+                <div className="p-5 pb-3">
+                  <h4 className="text-base font-semibold text-[#f5f5f7]">Opportunities ({backlinkResult.opportunities.length})</h4>
+                </div>
+                <div className="max-h-[400px] overflow-y-auto apple-scrollbar">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-[rgba(255,255,255,0.06)]">
+                        <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Title</th>
+                        <th className="w-24 text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Type</th>
+                        <th className="w-24 text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Priority</th>
+                        <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Strategy</th>
+                        <th className="text-left text-xs font-medium text-[#86868b] uppercase tracking-wider px-5 py-3">Content Idea</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {backlinkResult.opportunities.map((opp, idx) => (
+                        <tr key={idx} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+                          <td className="px-5 py-3.5">
+                            <div>
+                              <a
+                                href={opp.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-medium text-sm text-[#2997ff] hover:underline flex items-center gap-1"
+                              >
+                                {opp.title}
+                                <ExternalLink className="h-3 w-3 shrink-0" />
+                              </a>
+                              <p className="text-xs text-[#6e6e73] truncate max-w-[200px]">{opp.url}</p>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3.5">{getResultTypeBadge(opp.type)}</td>
+                          <td className="px-5 py-3.5">{getPriorityBadge(opp.priority)}</td>
+                          <td className="px-5 py-3.5 text-xs text-[#86868b] max-w-[200px]">{opp.outreachStrategy}</td>
+                          <td className="px-5 py-3.5 text-xs text-[#86868b] max-w-[200px]">{opp.contentIdea}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
               {/* Content Suggestions */}
               {backlinkResult.contentSuggestions.length > 0 && (
-                <Card className="mat-card rounded-[20px]">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                      <Lightbulb className="h-4 w-4 text-[#64D2FF]" /> Content Suggestions
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {backlinkResult.contentSuggestions.map((suggestion, idx) => (
-                        <div key={idx} className="flex items-start gap-2 p-3 rounded-[12px] fill-3 text-sm">
-                          <FileText className="h-4 w-4 text-white/55 mt-0.5 shrink-0" />
-                          <span className="text-white">{suggestion}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="apple-tile p-5">
+                  <h4 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-3">
+                    <Lightbulb className="h-4 w-4 text-[#2997ff]" /> Content Suggestions
+                  </h4>
+                  <div className="space-y-2">
+                    {backlinkResult.contentSuggestions.map((suggestion, idx) => (
+                      <div key={idx} className="flex items-start gap-2 p-3 rounded-xl bg-[rgba(255,255,255,0.03)] text-sm">
+                        <FileText className="h-4 w-4 text-[#86868b] mt-0.5 shrink-0" />
+                        <span className="text-[#f5f5f7]">{suggestion}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
 
               {/* Outreach Templates */}
               {backlinkResult.outreachTemplates.length > 0 && (
-                <Card className="mat-card rounded-[20px]">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
-                      <Mail className="h-4 w-4 text-[#64D2FF]" /> Outreach Templates
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
+                <div className="apple-tile p-5">
+                  <h4 className="text-base font-semibold flex items-center gap-2 text-[#f5f5f7] mb-3">
+                    <Mail className="h-4 w-4 text-[#2997ff]" /> Outreach Templates
+                  </h4>
+                  <div className="space-y-3">
                     {backlinkResult.outreachTemplates.map((template, idx) => (
-                      <div key={idx} className="border border-white/7 rounded-[12px] overflow-hidden">
+                      <div key={idx} className="rounded-xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
                         <button
                           onClick={() => toggleTemplate(idx)}
-                          className="w-full flex items-center justify-between p-3.5 hover:bg-white/5 transition-colors text-left"
+                          className="w-full flex items-center justify-between p-3.5 hover:bg-[rgba(255,255,255,0.03)] transition-colors text-left"
                         >
                           <div className="flex items-center gap-2">
-                            <span className="badge badge-outline">{template.type}</span>
+                            <span className="apple-badge apple-badge-outline">{template.type}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             {expandedTemplates.has(idx) && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-7 text-xs text-[#64D2FF] hover:text-[#64D2FF]"
+                              <button
+                                className="apple-btn apple-btn-ghost text-xs min-h-0 h-7"
                                 onClick={(e) => { e.stopPropagation(); copyToClipboard(template.template, idx); }}
                               >
                                 {copiedTemplate === idx ? (
-                                  <><Check className="mr-1 h-3 w-3" /> Copied</>
+                                  <><Check className="h-3 w-3" /> Copied</>
                                 ) : (
-                                  <><Copy className="mr-1 h-3 w-3" /> Copy</>
+                                  <><Copy className="h-3 w-3" /> Copy</>
                                 )}
-                              </Button>
+                              </button>
                             )}
                             {expandedTemplates.has(idx) ? (
-                              <ChevronUp className="h-4 w-4 text-white/55" />
+                              <ChevronUp className="h-4 w-4 text-[#6e6e73]" />
                             ) : (
-                              <ChevronDown className="h-4 w-4 text-white/55" />
+                              <ChevronDown className="h-4 w-4 text-[#6e6e73]" />
                             )}
                           </div>
                         </button>
                         {expandedTemplates.has(idx) && (
-                          <div className="border-t border-white/7 p-4 bg-white/3">
-                            <pre className="whitespace-pre-wrap text-sm text-white/55 font-sans leading-relaxed">
+                          <div className="border-t border-[rgba(255,255,255,0.06)] p-4 bg-[rgba(255,255,255,0.02)]">
+                            <pre className="whitespace-pre-wrap text-sm text-[#86868b] font-sans leading-relaxed">
                               {template.template}
                             </pre>
                           </div>
                         )}
                       </div>
                     ))}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -1986,15 +1910,13 @@ export default function SEOInsightApp() {
       )}
 
       {!serpLoading && !serpResult && !serpError && (
-        <Card className="mat-subtle border-dashed border-white/7 rounded-[20px]">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center justify-center py-12 gap-3 text-white/55">
-              <LineChart className="h-12 w-12 opacity-30" />
-              <p className="text-lg font-medium text-white">No SERP analysis yet</p>
-              <p className="text-sm">Enter a keyword and click &quot;Analyze SERP&quot; to get started</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="apple-tile p-6" style={{ border: '1px dashed rgba(255,255,255,0.08)' }}>
+          <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#6e6e73]">
+            <LineChart className="h-12 w-12 opacity-30" />
+            <p className="text-lg font-medium text-[#f5f5f7]">No SERP analysis yet</p>
+            <p className="text-sm">Enter a keyword and click &quot;Analyze SERP&quot; to get started</p>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -2012,28 +1934,28 @@ export default function SEOInsightApp() {
 
   return (
     <div className="app-bg min-h-screen flex flex-col">
-      {/* ─── Top Navigation ─── */}
-      <header className="sticky top-0 z-50 mat-nav border-b border-white/7">
-        <div className="max-w-6xl mx-auto flex items-center justify-between h-14 px-4 lg:px-6">
+      {/* ─── Top Navigation — Apple frosted glass ─── */}
+      <header className="sticky top-0 z-50 apple-nav">
+        <div className="max-w-[980px] mx-auto flex items-center justify-between px-4 lg:px-6" style={{ height: 44 }}>
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0A84FF]">
-              <Search className="h-4 w-4 text-white" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0071e3]">
+              <Search className="h-3.5 w-3.5 text-white" />
             </div>
-            <span className="font-bold text-white text-lg tracking-tight">SEO Insight</span>
+            <span className="font-semibold text-[#f5f5f7] text-sm tracking-[-0.01em]">SEO Insight</span>
           </div>
 
-          {/* Desktop Nav Tabs */}
+          {/* Desktop Nav Tabs — Apple pill-style */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 className={cn(
-                  'px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200',
+                  'px-3 py-1 rounded-full text-xs font-medium transition-all duration-[240ms]',
                   activeTab === item.id
-                    ? 'bg-[#0A84FF] text-white'
-                    : 'text-white/55 hover:text-white hover:bg-white/6'
+                    ? 'bg-[#0071e3] text-white'
+                    : 'text-[#86868b] hover:text-[#f5f5f7] hover:bg-[rgba(255,255,255,0.05)]'
                 )}
               >
                 {item.label}
@@ -2044,27 +1966,27 @@ export default function SEOInsightApp() {
           {/* Mobile Menu Button */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="md:hidden text-white/55">
+              <button className="md:hidden text-[#86868b] p-2">
                 <Menu className="h-5 w-5" />
-              </Button>
+              </button>
             </SheetTrigger>
-            <SheetContent side="right" className="mat-elevated border-white/7 w-64 p-6">
+            <SheetContent side="right" className="bg-[#1c1c1e] border-[rgba(255,255,255,0.06)] w-64 p-6">
               <div className="flex items-center justify-between mb-6">
-                <span className="font-bold text-white text-lg">Menu</span>
-                <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(false)} className="text-white/55">
+                <span className="font-semibold text-[#f5f5f7] text-sm">Menu</span>
+                <button onClick={() => setMobileMenuOpen(false)} className="text-[#86868b] p-1">
                   <X className="h-5 w-5" />
-                </Button>
+                </button>
               </div>
-              <nav className="flex flex-col gap-2">
+              <nav className="flex flex-col gap-1">
                 {navItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); }}
                     className={cn(
-                      'flex items-center gap-3 px-4 py-3 rounded-[12px] text-sm font-medium transition-all',
+                      'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-[240ms]',
                       activeTab === item.id
-                        ? 'bg-[#0A84FF] text-white'
-                        : 'text-white/55 hover:text-white hover:bg-white/6'
+                        ? 'bg-[#0071e3] text-white'
+                        : 'text-[#86868b] hover:text-[#f5f5f7] hover:bg-[rgba(255,255,255,0.05)]'
                     )}
                   >
                     {item.icon}
@@ -2079,7 +2001,7 @@ export default function SEOInsightApp() {
 
       {/* ─── Main Content ─── */}
       <main className="flex-1 relative z-[1]">
-        <div className="max-w-6xl mx-auto px-4 lg:px-6 py-8 md:py-12">
+        <div className="max-w-[980px] mx-auto px-4 lg:px-6 py-8 md:py-12">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -2096,17 +2018,17 @@ export default function SEOInsightApp() {
       </main>
 
       {/* ─── Mobile Bottom Nav ─── */}
-      <nav className="md:hidden mat-nav border-t border-white/7 sticky bottom-0 z-50">
+      <nav className="md:hidden apple-nav border-t border-[rgba(255,255,255,0.06)] sticky bottom-0 z-50">
         <div className="flex items-center justify-around h-16 px-2">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={cn(
-                'flex flex-col items-center gap-1 py-2 px-3 transition-colors',
+                'flex flex-col items-center gap-1 py-2 px-3 transition-colors duration-[240ms]',
                 activeTab === item.id
-                  ? 'text-[#0A84FF]'
-                  : 'text-white/35'
+                  ? 'text-[#0071e3]'
+                  : 'text-[#6e6e73]'
               )}
             >
               {item.icon}
@@ -2116,17 +2038,17 @@ export default function SEOInsightApp() {
         </div>
       </nav>
 
-      {/* ─── Footer ─── */}
-      <footer className="mat-subtle border-t border-white/7">
-        <div className="max-w-6xl mx-auto px-4 lg:px-6 py-6">
+      {/* ─── Footer — Apple-style minimal ─── */}
+      <footer className="border-t border-[rgba(255,255,255,0.06)]">
+        <div className="max-w-[980px] mx-auto px-4 lg:px-6 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#0A84FF]">
-                <Search className="h-3 w-3 text-white" />
+              <div className="flex h-5 w-5 items-center justify-center rounded-md bg-[#0071e3]">
+                <Search className="h-2.5 w-2.5 text-white" />
               </div>
-              <span className="text-sm font-semibold text-white">SEO Insight</span>
+              <span className="text-xs font-semibold text-[#f5f5f7]">SEO Insight</span>
             </div>
-            <p className="text-xs text-white/35">
+            <p className="text-xs text-[#6e6e73]">
               Comprehensive SEO, AEO &amp; GEO analysis platform
             </p>
           </div>

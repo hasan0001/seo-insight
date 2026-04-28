@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Keyword {
+  id          String   @id @default(cuid())
+  keyword     String
+  source      String   @default("manual")
+  cluster     String?
+  searchVolume Int     @default(0)
+  difficulty  String   @default("unknown")
+  createdAt   DateTime @default(now())
+}
+
+model CrawledPage {
+  id              String   @id @default(cuid())
+  url             String
+  title           String   @default("")
+  metaDescription String   @default("")
+  h1              String   @default("")
+  h2Count         Int      @default(0)
+  h3Count         Int      @default(0)
+  wordCount       Int      @default(0)
+  internalLinks   Int      @default(0)
+  externalLinks   Int      @default(0)
+  images          Int      @default(0)
+  hasFavicon      Boolean  @default(false)
+  isHttps         Boolean  @default(false)
+  loadTime        Float    @default(0)
+  headings        String   @default("[]")
+  bodyText        String   @default("")
+  crawlSessionId  String
+  createdAt       DateTime @default(now())
+  session        CrawlSession @relation(fields: [crawlSessionId], references: [id])
+}
+
+model CrawlSession {
+  id          String   @id @default(cuid())
+  startUrl    String
+  totalPages  Int      @default(0)
+  status      String   @default("running")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  pages       CrawledPage[]
+}
+
+model AuditResult {
+  id              String   @id @default(cuid())
+  pageUrl         String
+  crawlSessionId  String
+  seoScore        Int      @default(0)
+  aeoScore        Int      @default(0)
+  geoScore        Int      @default(0)
+  issues          String   @default("[]")
+  suggestions     String   @default("[]")
+  createdAt       DateTime @default(now())
+}
+
+model SerpResult {
+  id          String   @id @default(cuid())
+  keyword     String
+  position    Int
+  title       String
+  url         String
+  snippet     String
+  resultType  String   @default("web")
+  createdAt   DateTime @default(now())
+}
+
+model BacklinkTarget {
+  id          String   @id @default(cuid())
+  keyword     String
+  url         String
+  title       String
+  targetTypes String   @default("[]")
+  outreachStrategy String @default("")
+  contentIdea String   @default("")
+  createdAt   DateTime @default(now())
+}

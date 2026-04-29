@@ -52,3 +52,25 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Database files
+*.db
+*.db-journal
+
+# Z scripts and runtime
+.zscripts/
+
+# Download directory
+/download/
+
+# Worklog
+worklog.md
+
+# Backup files
+*.bak
+
+# Examples (not part of main app)
+/examples/
+
+# Mini-services
+/mini-services/

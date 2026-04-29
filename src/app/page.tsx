@@ -1939,6 +1939,9 @@ export default function SEOInsightApp() {
       <div className="glass-blob glass-blob-cyan" style={{ width: 500, height: 500, top: '20%', right: '-8%' }} />
       <div className="glass-blob glass-blob-purple" style={{ width: 400, height: 400, bottom: '10%', left: '20%' }} />
 
+      {/* Content layer — above animated background mesh */}
+      <div className="content-layer flex flex-col min-h-screen">
+
       {/* ─── Top Navigation — Apple frosted glass ─── */}
       <header className="sticky top-0 z-50 glass-nav">
         <div className="max-w-[980px] mx-auto flex items-center justify-between px-4 lg:px-6" style={{ height: 44 }}>
@@ -2059,6 +2062,7 @@ export default function SEOInsightApp() {
           </div>
         </div>
       </footer>
+      </div>{/* end content-layer */}
     </div>
   );
 }

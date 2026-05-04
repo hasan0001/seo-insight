@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   keywords: ["SEO", "AEO", "GEO", "keyword research", "site audit", "SERP analysis", "backlink strategy", "search engine optimization"],
   authors: [{ name: "SEO Insight" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
   openGraph: {
     title: "SEO Insight — SEO + AEO + GEO Analysis Platform",

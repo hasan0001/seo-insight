@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -55,7 +55,7 @@ import {
   Check,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -419,17 +419,7 @@ function AppleCheckbox({
   );
 }
 
-// ─── Animation Variants ────────────────────────────────────────────────────────
-
-const pageVariants = { initial: { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -6 } };
-const pageTransition = { type: 'spring' as const, stiffness: 300, damping: 30 };
-const cardVariants = {
-  hidden: { opacity: 0, y: 14, scale: 0.98 },
-  visible: (i: number) => ({
-    opacity: 1, y: 0, scale: 1,
-    transition: { delay: i * 0.08, type: 'spring', stiffness: 260, damping: 25 },
-  }),
-};
+// ─── Animation Variants removed (no longer needed) ────────────────────────────────
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
@@ -437,32 +427,7 @@ export default function SEOInsightApp() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Mouse tracking for light effect
-  const mouseLightRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (mouseLightRef.current) {
-        mouseLightRef.current.style.left = e.clientX + 'px';
-        mouseLightRef.current.style.top = e.clientY + 'px';
-        mouseLightRef.current.style.opacity = '1';
-      }
-    };
-    const handleMouseLeave = () => {
-      if (mouseLightRef.current) mouseLightRef.current.style.opacity = '0';
-    };
-    const handleMouseEnter = () => {
-      if (mouseLightRef.current) mouseLightRef.current.style.opacity = '1';
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-    };
-  }, []);
+  // Mouse light effect removed (was causing unnecessary DOM updates)
 
   // Keywords state
   const [keywordInput, setKeywordInput] = useState('');
@@ -695,27 +660,14 @@ export default function SEOInsightApp() {
       {/* Hero with hero-glow */}
       <div className="text-center py-12 md:py-20 relative">
         <div className="hero-glow" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }} />
-        <motion.h1
-          className="apple-headline"
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={pageTransition}
-        >
+        <h1 className="apple-headline">
           SEO Insight
-        </motion.h1>
-        <motion.p
-          className="mt-4 apple-subheadline max-w-[600px] mx-auto"
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...pageTransition, delay: 0.08 }}
-        >
+        </h1>
+        <p className="mt-4 apple-subheadline max-w-[600px] mx-auto">
           Comprehensive SEO, AEO &amp; GEO analysis platform. Discover keywords, audit your site, analyze competitors, and build winning strategies.
-        </motion.p>
-        <motion.div
+        </p>
+        <div
           className="flex flex-wrap justify-center gap-3 mt-8"
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...pageTransition, delay: 0.16 }}
         >
           <span className="apple-badge apple-badge-blue px-4 py-1.5 text-sm font-medium">
             <Zap className="mr-1.5 h-3.5 w-3.5" /> SEO Optimization
@@ -726,7 +678,7 @@ export default function SEOInsightApp() {
           <span className="apple-badge apple-badge-blue px-4 py-1.5 text-sm font-medium">
             <Brain className="mr-1.5 h-3.5 w-3.5" /> GEO Analysis
           </span>
-        </motion.div>
+        </div>
       </div>
 
       {/* Feature Cards — Apple tile grid */}
@@ -756,14 +708,8 @@ export default function SEOInsightApp() {
             icon: <Link2 className="h-6 w-6" />,
             tab: 'serp' as ActiveTab,
           },
-        ].map((feature, index) => (
-          <motion.div
-            key={feature.title}
-            custom={index}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-          >
+        ].map((feature) => (
+          <div key={feature.title}>
             <div
               className="apple-tile cursor-pointer p-6 h-full"
               onClick={() => setActiveTab(feature.tab)}
@@ -781,7 +727,7 @@ export default function SEOInsightApp() {
                 </span>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -820,14 +766,8 @@ export default function SEOInsightApp() {
               description: 'Generate pattern analysis, backlink opportunities, and outreach templates to outrank competitors.',
               icon: <Target className="h-5 w-5" />,
             },
-          ].map((item, index) => (
-            <motion.div
-              key={item.step}
-              custom={index}
-              variants={cardVariants}
-              initial="hidden"
-              animate="visible"
-            >
+          ].map((item) => (
+            <div key={item.step}>
               <div className="p-5 rounded-[18px] bg-[rgba(0,0,0,0.03)]">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0071e3] text-white text-xs font-semibold mb-3">
                   {item.step}
@@ -838,7 +778,7 @@ export default function SEOInsightApp() {
                 </div>
                 <p className="text-xs text-[#6e6e73] leading-relaxed">{item.description}</p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
@@ -864,14 +804,8 @@ export default function SEOInsightApp() {
             description: 'Optimize for generative AI with entity-rich content, structured data, and trust signals.',
             icon: <Brain className="h-6 w-6" />,
           },
-        ].map((item, index) => (
-          <motion.div
-            key={item.title}
-            custom={index}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-          >
+        ].map((item) => (
+          <div key={item.title}>
             <div className="apple-tile p-6 h-full">
               <div className="flex items-center gap-4">
                 <div className="glass-icon-bg flex h-12 w-12 items-center justify-center rounded-xl">
@@ -884,7 +818,7 @@ export default function SEOInsightApp() {
               </div>
               <p className="mt-4 text-sm text-[#6e6e73] leading-relaxed">{item.description}</p>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
@@ -1202,20 +1136,12 @@ export default function SEOInsightApp() {
         <>
           {/* Score Summary */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...pageTransition, delay: 0 }}
-            >
+            <div>
               <div className="apple-tile p-8 flex flex-col items-center">
                                 <ScoreCircle score={auditResult.seo.averageScore} size={140} label="SEO Score" />
               </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...pageTransition, delay: 0.08 }}
-            >
+            </div>
+            <div>
               <div className="apple-tile p-8 flex flex-col items-center">
                                 <ScoreCircle
                   score={Math.round(auditResult.aeo.reduce((s, a) => s + a.aeoScore, 0) / Math.max(auditResult.aeo.length, 1))}
@@ -1223,12 +1149,8 @@ export default function SEOInsightApp() {
                   label="AEO Score"
                 />
               </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...pageTransition, delay: 0.16 }}
-            >
+            </div>
+            <div>
               <div className="apple-tile p-8 flex flex-col items-center">
                                 <ScoreCircle
                   score={Math.round(auditResult.geo.reduce((s, g) => s + g.geoScore, 0) / Math.max(auditResult.geo.length, 1))}
@@ -1236,7 +1158,7 @@ export default function SEOInsightApp() {
                   label="GEO Score"
                 />
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Crawl Summary */}
@@ -1985,9 +1907,6 @@ export default function SEOInsightApp() {
 
   return (
     <div className="app-bg min-h-screen relative overflow-hidden flex flex-col">
-      {/* Mouse-following light */}
-      <div ref={mouseLightRef} className="mouse-light" style={{ opacity: 0 }} />
-
       {/* Content layer — above animated background mesh */}
       <div className="content-layer flex flex-col min-h-screen">
 
@@ -2059,18 +1978,7 @@ export default function SEOInsightApp() {
       {/* ─── Main Content ─── */}
       <main className="flex-1 relative z-[1]">
         <div className="max-w-[980px] mx-auto px-4 lg:px-6 py-8 md:py-12">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              variants={pageVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={pageTransition}
-            >
-              {tabContent}
-            </motion.div>
-          </AnimatePresence>
+          {tabContent}
         </div>
       </main>
 
@@ -2106,7 +2014,7 @@ export default function SEOInsightApp() {
               <span className="text-xs font-semibold text-[#1d1d1f]">SEO Insight</span>
             </div>
             <p className="text-xs text-[#86868b]">
-              Comprehensive SEO, AEO &amp; GEO analysis platform
+              Comprehensive SEO, AEO &amp; GEO analysis platform — Powered by NeuralEngine
             </p>
           </div>
         </div>

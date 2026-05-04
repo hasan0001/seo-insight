@@ -234,7 +234,6 @@
     radial-gradient(ellipse 45% 40% at 65% 35%, rgba(0, 113, 227, 0.10), transparent 45%),
     radial-gradient(ellipse 35% 30% at 50% 10%, rgba(255, 59, 48, 0.08), transparent 40%),
     radial-gradient(ellipse 40% 35% at 15% 55%, rgba(175, 82, 222, 0.12), transparent 45%);
-  animation: meshDrift 30s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 0;
 }
@@ -252,26 +251,11 @@
     radial-gradient(ellipse 15% 12% at 70% 30%, rgba(255, 255, 255, 0.12), transparent 45%),
     radial-gradient(ellipse 18% 14% at 55% 75%, rgba(255, 255, 255, 0.10), transparent 45%),
     radial-gradient(ellipse 12% 10% at 20% 80%, rgba(255, 255, 255, 0.08), transparent 40%);
-  animation: causticRipple 12s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 0;
 }
 
-@keyframes meshDrift {
-  0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
-  25%  { transform: translate(3%, -2%) rotate(0.8deg) scale(1.03); }
-  50%  { transform: translate(-2%, 3%) rotate(-0.5deg) scale(1.01); }
-  75%  { transform: translate(2%, -1%) rotate(0.3deg) scale(1.04); }
-  100% { transform: translate(-1%, -3%) rotate(0.6deg) scale(1.02); }
-}
 
-@keyframes causticRipple {
-  0%   { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.6; }
-  25%  { transform: translate(5%, -3%) rotate(2deg) scale(1.05); opacity: 0.9; }
-  50%  { transform: translate(-3%, 5%) rotate(-1deg) scale(0.98); opacity: 0.5; }
-  75%  { transform: translate(4%, 2%) rotate(1.5deg) scale(1.03); opacity: 0.85; }
-  100% { transform: translate(-2%, -4%) rotate(-0.5deg) scale(1.02); opacity: 0.7; }
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  *  LIQUID GLASS NAVIGATION — frosted glass with animated prismatic edge
@@ -309,14 +293,10 @@
     rgba(90, 200, 250, 0.6) 100%
   );
   background-size: 200% 100%;
-  animation: prismaticSlide 6s linear infinite;
   opacity: 0.8;
 }
 
-@keyframes prismaticSlide {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
  *  LIQUID GLASS CARD — the core glass material with FULL DYNAMIC effects
@@ -355,7 +335,6 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  animation: borderPrismShift 8s ease-in-out infinite, borderPulse 3s ease-in-out infinite alternate;
   opacity: 0.8;
   transition: opacity var(--apple-duration-normal) var(--apple-ease);
 }
@@ -382,7 +361,6 @@
       transparent 60%
     );
   pointer-events: none;
-  animation: specularSweep 4s ease-in-out infinite;
   opacity: 1;
 }
 
@@ -394,25 +372,9 @@
 
 .glass-card:hover::before {
   opacity: 1;
-  animation: borderPrismShift 3s ease-in-out infinite, borderPulse 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes specularSweep {
-  0%   { transform: translateX(-40%) translateY(-15%) rotate(0deg); }
-  50%  { transform: translateX(40%) translateY(15%) rotate(3deg); }
-  100% { transform: translateX(-40%) translateY(-15%) rotate(0deg); }
-}
 
-@keyframes borderPrismShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes borderPulse {
-  0%   { opacity: 0.5; }
-  100% { opacity: 1; }
-}
 
 /* ─── Strong glass variant ─────────────────────────────────────────── */
 
@@ -445,7 +407,6 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  animation: borderPrismShift 6s ease-in-out infinite, borderPulse 2.5s ease-in-out infinite alternate;
   opacity: 0.7;
 }
 
@@ -480,7 +441,6 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  animation: borderPrismShift 5s ease-in-out infinite, borderPulse 2s ease-in-out infinite alternate;
   opacity: 0.85;
 }
 
@@ -521,7 +481,6 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  animation: borderPrismShift 7s ease-in-out infinite, borderPulse 2.5s ease-in-out infinite alternate;
   opacity: 0.65;
   transition: opacity var(--apple-duration-normal) var(--apple-ease);
 }
@@ -554,7 +513,6 @@
     );
   border-radius: inherit;
   pointer-events: none;
-  animation: tileShimmer 5s ease-in-out infinite;
 }
 
 .apple-tile:hover {
@@ -565,14 +523,9 @@
 
 .apple-tile:hover::before {
   opacity: 1;
-  animation: borderPrismShift 3s ease-in-out infinite, borderPulse 1s ease-in-out infinite alternate;
 }
 
-@keyframes tileShimmer {
-  0%   { transform: translateX(-20%); }
-  50%  { transform: translateX(20%); }
-  100% { transform: translateX(-20%); }
-}
+
 
 .apple-tile-blue {
   background: linear-gradient(135deg, rgba(0, 113, 227, 0.10) 0%, rgba(89, 204, 252, 0.06) 100%);
@@ -596,7 +549,6 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  animation: borderPrismShift 5s ease-in-out infinite;
 }
 
 .apple-tile-transparent {
@@ -658,16 +610,10 @@
     transparent 60%
   );
   transform: rotate(25deg);
-  animation: shimmerStreak 3.5s ease-in-out infinite;
   pointer-events: none;
 }
 
-@keyframes shimmerStreak {
-  0%   { left: -100%; opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { left: 200%; opacity: 0; }
-}
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
  *  CAUSTIC LIGHT RIPPLE — animated light pool effect inside glass
@@ -698,7 +644,6 @@
     radial-gradient(ellipse 20% 15% at 50% 70%, rgba(175, 82, 222, 0.6), transparent 40%),
     radial-gradient(ellipse 28% 22% at 80% 65%, rgba(52, 199, 89, 0.5), transparent 45%),
     radial-gradient(ellipse 22% 16% at 15% 75%, rgba(255, 159, 10, 0.6), transparent 40%);
-  animation: causticSwirl 10s ease-in-out infinite alternate;
 }
 
 .caustic-light::after {
@@ -712,21 +657,9 @@
     radial-gradient(ellipse 15% 10% at 40% 30%, rgba(255, 255, 255, 0.9), transparent 40%),
     radial-gradient(ellipse 12% 8% at 70% 50%, rgba(255, 255, 255, 0.7), transparent 35%),
     radial-gradient(ellipse 18% 12% at 30% 65%, rgba(255, 255, 255, 0.6), transparent 40%);
-  animation: causticBright 7s ease-in-out infinite alternate;
 }
 
-@keyframes causticSwirl {
-  0%   { transform: rotate(0deg) scale(1); }
-  33%  { transform: rotate(3deg) scale(1.05); }
-  66%  { transform: rotate(-2deg) scale(0.98); }
-  100% { transform: rotate(1deg) scale(1.03); }
-}
 
-@keyframes causticBright {
-  0%   { opacity: 0.5; transform: translateY(0) scale(1); }
-  50%  { opacity: 1; transform: translateY(-5%) scale(1.08); }
-  100% { opacity: 0.6; transform: translateY(3%) scale(0.95); }
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  *  PRISMATIC REFRACTION EDGE — rainbow refraction on glass edges
@@ -758,7 +691,6 @@
     rgba(52, 199, 89, 0.3),
     rgba(90, 200, 250, 0.4)
   );
-  animation: refractionRotate 12s linear infinite;
   filter: blur(1px);
 }
 
@@ -770,11 +702,7 @@
   background: transparent;
 }
 
-@keyframes refractionRotate {
-  0% { filter: blur(1px) hue-rotate(0deg); }
-  50% { filter: blur(1.5px) hue-rotate(30deg); }
-  100% { filter: blur(1px) hue-rotate(0deg); }
-}
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
  *  TYPOGRAPHY, BUTTONS, INPUTS, BADGES
@@ -881,14 +809,9 @@
     rgba(255, 255, 255, 0.2),
     transparent
   );
-  animation: btnShine 3s ease-in-out infinite;
 }
 
-@keyframes btnShine {
-  0%   { left: -100%; }
-  50%  { left: 100%; }
-  100% { left: 100%; }
-}
+
 
 .apple-btn-primary:hover {
   background: linear-gradient(180deg, #3da4ff 0%, #0077ed 100%);
@@ -1159,47 +1082,33 @@
   border-radius: 50%;
   filter: blur(80px);
   pointer-events: none;
-  animation: orbFloat 18s ease-in-out infinite alternate;
 }
 
 .glass-orb-blue {
   background: radial-gradient(circle, rgba(0, 113, 227, 0.35), transparent 65%);
-  animation-delay: 0s;
 }
 
 .glass-orb-cyan {
   background: radial-gradient(circle, rgba(90, 200, 250, 0.30), transparent 65%);
-  animation-delay: -6s;
 }
 
 .glass-orb-purple {
   background: radial-gradient(circle, rgba(175, 82, 222, 0.28), transparent 65%);
-  animation-delay: -12s;
 }
 
 .glass-orb-green {
   background: radial-gradient(circle, rgba(52, 199, 89, 0.22), transparent 65%);
-  animation-delay: -3s;
 }
 
 .glass-orb-orange {
   background: radial-gradient(circle, rgba(255, 159, 10, 0.20), transparent 65%);
-  animation-delay: -9s;
 }
 
 .glass-orb-pink {
   background: radial-gradient(circle, rgba(255, 55, 95, 0.18), transparent 65%);
-  animation-delay: -15s;
 }
 
-@keyframes orbFloat {
-  0%   { transform: translate(0, 0) scale(1); }
-  20%  { transform: translate(30px, -20px) scale(1.08); }
-  40%  { transform: translate(-15px, 30px) scale(0.95); }
-  60%  { transform: translate(25px, 15px) scale(1.05); }
-  80%  { transform: translate(-20px, -25px) scale(1.02); }
-  100% { transform: translate(10px, 20px) scale(0.98); }
-}
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
  *  ANIMATED FLOATING GLASS BLOBS — larger, more vibrant
@@ -1211,31 +1120,21 @@
   filter: blur(100px);
   opacity: 0.6;
   pointer-events: none;
-  animation: blobFloat 22s ease-in-out infinite alternate;
 }
 
 .glass-blob-blue {
   background: radial-gradient(circle, rgba(0, 113, 227, 0.30), transparent 70%);
-  animation-delay: 0s;
 }
 
 .glass-blob-cyan {
   background: radial-gradient(circle, rgba(90, 200, 250, 0.25), transparent 70%);
-  animation-delay: -7s;
 }
 
 .glass-blob-purple {
   background: radial-gradient(circle, rgba(175, 82, 222, 0.22), transparent 70%);
-  animation-delay: -14s;
 }
 
-@keyframes blobFloat {
-  0%   { transform: translate(0, 0) scale(1); }
-  25%  { transform: translate(25px, -18px) scale(1.08); }
-  50%  { transform: translate(-12px, 25px) scale(0.96); }
-  75%  { transform: translate(18px, 12px) scale(1.04); }
-  100% { transform: translate(-18px, -12px) scale(1); }
-}
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
  *  MOUSE LIGHT — glowing light that follows cursor
@@ -1315,13 +1214,6 @@
   );
   filter: blur(60px);
   pointer-events: none;
-  animation: heroGlowPulse 6s ease-in-out infinite alternate;
-}
-
-@keyframes heroGlowPulse {
-  0%   { transform: scale(1); opacity: 0.7; }
-  50%  { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
 }
 
 /* ─── Reduced Motion ──────────────────────────────────────────────── */

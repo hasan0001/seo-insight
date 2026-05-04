@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -438,18 +438,22 @@ export default function SEOInsightApp() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Mouse tracking for light effect
-  const [mouseX, setMouseX] = useState(0);
-  const [mouseY, setMouseY] = useState(0);
-  const [mouseInPage, setMouseInPage] = useState(false);
+  const mouseLightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMouseX(e.clientX);
-      setMouseY(e.clientY);
-      setMouseInPage(true);
+      if (mouseLightRef.current) {
+        mouseLightRef.current.style.left = e.clientX + 'px';
+        mouseLightRef.current.style.top = e.clientY + 'px';
+        mouseLightRef.current.style.opacity = '1';
+      }
     };
-    const handleMouseLeave = () => setMouseInPage(false);
-    const handleMouseEnter = () => setMouseInPage(true);
+    const handleMouseLeave = () => {
+      if (mouseLightRef.current) mouseLightRef.current.style.opacity = '0';
+    };
+    const handleMouseEnter = () => {
+      if (mouseLightRef.current) mouseLightRef.current.style.opacity = '1';
+    };
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
@@ -764,7 +768,6 @@ export default function SEOInsightApp() {
               className="apple-tile cursor-pointer p-6 h-full"
               onClick={() => setActiveTab(feature.tab)}
             >
-              <div className="glossy-shimmer" />
               <div className="glass-icon-bg flex h-11 w-11 items-center justify-center rounded-xl">
                 <span className="text-[#2997ff]">{feature.icon}</span>
               </div>
@@ -784,8 +787,6 @@ export default function SEOInsightApp() {
 
       {/* Quick Start Guide — Apple tile */}
       <div className="apple-tile p-8 md:p-10">
-        <div className="glossy-shimmer" />
-        <div className="caustic-light" />
         <div className="flex items-center gap-2 mb-2">
           <div className="glass-icon-bg flex h-8 w-8 items-center justify-center rounded-lg">
             <Sparkles className="h-4 w-4 text-[#2997ff]" />
@@ -872,7 +873,6 @@ export default function SEOInsightApp() {
             animate="visible"
           >
             <div className="apple-tile p-6 h-full">
-              <div className="glossy-shimmer" />
               <div className="flex items-center gap-4">
                 <div className="glass-icon-bg flex h-12 w-12 items-center justify-center rounded-xl">
                   <span className="text-[#2997ff]">{item.icon}</span>
@@ -900,8 +900,7 @@ export default function SEOInsightApp() {
       </div>
 
       <div className="apple-tile p-6 space-y-5">
-        <div className="glossy-shimmer" />
-        <div>
+                <div>
           <h3 className="apple-callout">Seed Keyword</h3>
           <p className="text-sm text-[#6e6e73] mt-1">Enter a keyword to discover related keywords across multiple sources</p>
         </div>
@@ -949,8 +948,7 @@ export default function SEOInsightApp() {
 
       {keywordError && (
         <div className="apple-tile p-6" style={{ borderLeft: '3px solid #ff3b30' }}>
-          <div className="glossy-shimmer" />
-          <div className="flex items-center gap-2 text-[#1d1d1f]">
+                    <div className="flex items-center gap-2 text-[#1d1d1f]">
             <AlertCircle className="h-5 w-5 text-[#ff3b30]" />
             <p>{keywordError}</p>
           </div>
@@ -992,8 +990,7 @@ export default function SEOInsightApp() {
 
           {keywordView === 'table' ? (
             <div className="apple-tile overflow-hidden">
-              <div className="glossy-shimmer" />
-              <div className="max-h-[600px] overflow-y-auto apple-scrollbar">
+                            <div className="max-h-[600px] overflow-y-auto apple-scrollbar">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-[rgba(0,0,0,0.06)]">
@@ -1033,8 +1030,7 @@ export default function SEOInsightApp() {
             <div className="space-y-3">
               {Object.entries(clusteredKeywords).map(([cluster, keywords]) => (
                 <div key={cluster} className="apple-tile p-5">
-                  <div className="glossy-shimmer" />
-                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center justify-between mb-3">
                     <h3 className="text-base font-semibold text-[#1d1d1f]">{cluster}</h3>
                     <span className="apple-badge apple-badge-fill">{keywords.length} keywords</span>
                   </div>
@@ -1068,8 +1064,7 @@ export default function SEOInsightApp() {
 
       {keywordLoading && (
         <div className="apple-tile p-6">
-          <div className="glossy-shimmer" />
-          <div className="flex flex-col items-center justify-center py-12 gap-3">
+                    <div className="flex flex-col items-center justify-center py-12 gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-[#2997ff]" />
             <p className="text-[#6e6e73]">Discovering keywords across sources...</p>
           </div>
@@ -1078,8 +1073,7 @@ export default function SEOInsightApp() {
 
       {!keywordLoading && keywordResults.length === 0 && !keywordError && (
         <div className="apple-tile p-6 border-dashed" style={{ border: '1px dashed rgba(0,0,0,0.08)' }}>
-          <div className="glossy-shimmer" />
-          <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#86868b]">
+                    <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#86868b]">
             <KeyRound className="h-12 w-12 opacity-30" />
             <p className="text-lg font-medium text-[#1d1d1f]">No keywords discovered yet</p>
             <p className="text-sm">Enter a seed keyword and click &quot;Discover&quot; to get started</p>
@@ -1099,9 +1093,7 @@ export default function SEOInsightApp() {
       </div>
 
       <div className="apple-tile p-6 space-y-6">
-        <div className="glossy-shimmer" />
-        <div className="caustic-light" />
-        <div>
+                        <div>
           <h3 className="apple-callout">Crawl Settings</h3>
           <p className="text-sm text-[#6e6e73] mt-1">Configure your website crawl parameters</p>
         </div>
@@ -1179,8 +1171,7 @@ export default function SEOInsightApp() {
       {/* Progress */}
       {(crawlLoading || auditLoading) && (
         <div className="apple-tile p-6 space-y-3">
-          <div className="glossy-shimmer" />
-          <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center justify-between text-sm">
             <span className="text-[#6e6e73]">
               {crawlLoading ? 'Crawling website...' : 'Running audit analysis...'}
             </span>
@@ -1199,8 +1190,7 @@ export default function SEOInsightApp() {
 
       {auditError && (
         <div className="apple-tile p-6" style={{ borderLeft: '3px solid #ff3b30' }}>
-          <div className="glossy-shimmer" />
-          <div className="flex items-center gap-2 text-[#1d1d1f]">
+                    <div className="flex items-center gap-2 text-[#1d1d1f]">
             <AlertCircle className="h-5 w-5 text-[#ff3b30]" />
             <p>{auditError}</p>
           </div>
@@ -1218,8 +1208,7 @@ export default function SEOInsightApp() {
               transition={{ ...pageTransition, delay: 0 }}
             >
               <div className="apple-tile p-8 flex flex-col items-center">
-                <div className="glossy-shimmer" />
-                <ScoreCircle score={auditResult.seo.averageScore} size={140} label="SEO Score" />
+                                <ScoreCircle score={auditResult.seo.averageScore} size={140} label="SEO Score" />
               </div>
             </motion.div>
             <motion.div
@@ -1228,8 +1217,7 @@ export default function SEOInsightApp() {
               transition={{ ...pageTransition, delay: 0.08 }}
             >
               <div className="apple-tile p-8 flex flex-col items-center">
-                <div className="glossy-shimmer" />
-                <ScoreCircle
+                                <ScoreCircle
                   score={Math.round(auditResult.aeo.reduce((s, a) => s + a.aeoScore, 0) / Math.max(auditResult.aeo.length, 1))}
                   size={140}
                   label="AEO Score"
@@ -1242,8 +1230,7 @@ export default function SEOInsightApp() {
               transition={{ ...pageTransition, delay: 0.16 }}
             >
               <div className="apple-tile p-8 flex flex-col items-center">
-                <div className="glossy-shimmer" />
-                <ScoreCircle
+                                <ScoreCircle
                   score={Math.round(auditResult.geo.reduce((s, g) => s + g.geoScore, 0) / Math.max(auditResult.geo.length, 1))}
                   size={140}
                   label="GEO Score"
@@ -1255,8 +1242,7 @@ export default function SEOInsightApp() {
           {/* Crawl Summary */}
           {crawlResult && (
             <div className="apple-tile p-6">
-              <div className="glossy-shimmer" />
-              <h3 className="apple-callout flex items-center gap-2 mb-4">
+                            <h3 className="apple-callout flex items-center gap-2 mb-4">
                 <div className="glass-icon-bg flex h-7 w-7 items-center justify-center rounded-lg">
                   <FileSearch className="h-4 w-4 text-[#2997ff]" />
                 </div>
@@ -1286,8 +1272,7 @@ export default function SEOInsightApp() {
           {/* Top Issues */}
           {auditResult.seo.siteWideIssues.length > 0 && (
             <div className="apple-tile p-6">
-              <div className="glossy-shimmer" />
-              <h3 className="apple-callout flex items-center gap-2 mb-4">
+                            <h3 className="apple-callout flex items-center gap-2 mb-4">
                 <AlertTriangle className="h-5 w-5 text-[#6e6e73]" />
                 Top Site-Wide Issues
               </h3>
@@ -1311,8 +1296,7 @@ export default function SEOInsightApp() {
           {/* Top Suggestions */}
           {auditResult.seo.topSuggestions.length > 0 && (
             <div className="apple-tile p-6">
-              <div className="glossy-shimmer" />
-              <h3 className="apple-callout flex items-center gap-2 mb-4">
+                            <h3 className="apple-callout flex items-center gap-2 mb-4">
                 <div className="glass-icon-bg flex h-7 w-7 items-center justify-center rounded-lg">
                   <Lightbulb className="h-4 w-4 text-[#2997ff]" />
                 </div>
@@ -1331,8 +1315,7 @@ export default function SEOInsightApp() {
 
           {/* Per-Page Results */}
           <div className="apple-tile p-6">
-            <div className="glossy-shimmer" />
-            <h3 className="apple-callout flex items-center gap-2 mb-1">
+                        <h3 className="apple-callout flex items-center gap-2 mb-1">
               <div className="glass-icon-bg flex h-7 w-7 items-center justify-center rounded-lg">
                 <FileText className="h-4 w-4 text-[#2997ff]" />
               </div>
@@ -1516,8 +1499,7 @@ export default function SEOInsightApp() {
 
       {!crawlLoading && !auditLoading && !auditResult && !auditError && (
         <div className="apple-tile p-6" style={{ border: '1px dashed rgba(0,0,0,0.08)' }}>
-          <div className="glossy-shimmer" />
-          <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#86868b]">
+                    <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#86868b]">
             <Globe className="h-12 w-12 opacity-30" />
             <p className="text-lg font-medium text-[#1d1d1f]">No audit results yet</p>
             <p className="text-sm">Enter a website URL and click &quot;Crawl &amp; Audit&quot; to get started</p>
@@ -1537,9 +1519,7 @@ export default function SEOInsightApp() {
       </div>
 
       <div className="apple-tile p-6">
-        <div className="glossy-shimmer" />
-        <div className="caustic-light" />
-        <h3 className="apple-callout mb-1">SERP Analysis</h3>
+                        <h3 className="apple-callout mb-1">SERP Analysis</h3>
         <p className="text-sm text-[#6e6e73] mb-4">Enter a keyword to analyze search engine results</p>
         <div className="flex gap-3">
           <div className="relative flex-1">
@@ -1573,8 +1553,7 @@ export default function SEOInsightApp() {
 
       {serpError && (
         <div className="apple-tile p-6" style={{ borderLeft: '3px solid #ff3b30' }}>
-          <div className="glossy-shimmer" />
-          <div className="flex items-center gap-2 text-[#1d1d1f]">
+                    <div className="flex items-center gap-2 text-[#1d1d1f]">
             <AlertCircle className="h-5 w-5 text-[#ff3b30]" />
             <p>{serpError}</p>
           </div>
@@ -1583,8 +1562,7 @@ export default function SEOInsightApp() {
 
       {serpLoading && (
         <div className="apple-tile p-6">
-          <div className="glossy-shimmer" />
-          <div className="flex flex-col items-center justify-center py-12 gap-3">
+                    <div className="flex flex-col items-center justify-center py-12 gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-[#2997ff]" />
             <p className="text-[#6e6e73]">Analyzing search results...</p>
           </div>
@@ -1597,8 +1575,7 @@ export default function SEOInsightApp() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Result Type Breakdown */}
             <div className="apple-tile p-5">
-              <div className="glossy-shimmer" />
-              <h3 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
+                            <h3 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
                 <BarChart3 className="h-4 w-4 text-[#2997ff]" /> Result Types
               </h3>
               <div className="space-y-3">
@@ -1623,8 +1600,7 @@ export default function SEOInsightApp() {
 
             {/* Featured Snippet */}
             <div className="apple-tile p-5">
-              <div className="glossy-shimmer" />
-              <h3 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
+                            <h3 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
                 <Eye className="h-4 w-4 text-[#2997ff]" /> Featured Snippet
               </h3>
               {serpResult.featuredSnippet ? (
@@ -1648,8 +1624,7 @@ export default function SEOInsightApp() {
 
             {/* Common Words */}
             <div className="apple-tile p-5">
-              <div className="glossy-shimmer" />
-              <h3 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-1">
+                            <h3 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-1">
                 <MessageSquare className="h-4 w-4 text-[#6e6e73]" /> Common Title Words
               </h3>
               <p className="text-xs text-[#6e6e73] mb-3">Avg title word count: {serpResult.avgWordCountInTitles}</p>
@@ -1663,8 +1638,7 @@ export default function SEOInsightApp() {
 
           {/* Search Results Table */}
           <div className="apple-tile overflow-hidden">
-            <div className="glossy-shimmer" />
-            <div className="p-5 pb-3">
+                        <div className="p-5 pb-3">
               <h3 className="apple-callout flex items-center gap-2">
                 <div className="glass-icon-bg flex h-7 w-7 items-center justify-center rounded-lg">
                   <FileSearch className="h-4 w-4 text-[#2997ff]" />
@@ -1757,8 +1731,7 @@ export default function SEOInsightApp() {
 
               {/* Insights Table */}
               <div className="apple-tile overflow-hidden">
-                <div className="glossy-shimmer" />
-                <div className="p-5 pb-3">
+                                <div className="p-5 pb-3">
                   <h4 className="text-base font-semibold text-[#1d1d1f]">Insights</h4>
                 </div>
                 <div className="max-h-64 overflow-y-auto apple-scrollbar">
@@ -1795,8 +1768,7 @@ export default function SEOInsightApp() {
                 {/* Must Add */}
                 {patternResult.mustAdd.length > 0 && (
                   <div className="apple-tile p-5">
-                    <div className="glossy-shimmer" />
-                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
+                                        <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
                       <CheckCircle2 className="h-4 w-4 text-[#2997ff]" /> Must Add
                     </h4>
                     <div className="space-y-2">
@@ -1813,8 +1785,7 @@ export default function SEOInsightApp() {
                 {/* Missing Items */}
                 {patternResult.youAreMissing.length > 0 && (
                   <div className="apple-tile p-5">
-                    <div className="glossy-shimmer" />
-                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
+                                        <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
                       <XCircle className="h-4 w-4 text-[#6e6e73]" /> You Are Missing
                     </h4>
                     <div className="space-y-2">
@@ -1831,8 +1802,7 @@ export default function SEOInsightApp() {
                 {/* Content Gaps */}
                 {patternResult.contentGapAnalysis.length > 0 && (
                   <div className="apple-tile p-5">
-                    <div className="glossy-shimmer" />
-                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
+                                        <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
                       <Target className="h-4 w-4 text-[#6e6e73]" /> Content Gap Analysis
                     </h4>
                     <div className="space-y-2">
@@ -1849,8 +1819,7 @@ export default function SEOInsightApp() {
                 {/* Competitive Advantage */}
                 {patternResult.competitiveAdvantage.length > 0 && (
                   <div className="apple-tile p-5">
-                    <div className="glossy-shimmer" />
-                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
+                                        <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
                       <TrendingUp className="h-4 w-4 text-[#2997ff]" /> Competitive Advantage
                     </h4>
                     <div className="space-y-2">
@@ -1879,8 +1848,7 @@ export default function SEOInsightApp() {
 
               {/* Opportunities Table */}
               <div className="apple-tile overflow-hidden">
-                <div className="glossy-shimmer" />
-                <div className="p-5 pb-3">
+                                <div className="p-5 pb-3">
                   <h4 className="text-base font-semibold text-[#1d1d1f]">Opportunities ({backlinkResult.opportunities.length})</h4>
                 </div>
                 <div className="max-h-[400px] overflow-y-auto apple-scrollbar">
@@ -1925,8 +1893,7 @@ export default function SEOInsightApp() {
               {/* Content Suggestions */}
               {backlinkResult.contentSuggestions.length > 0 && (
                 <div className="apple-tile p-5">
-                  <div className="glossy-shimmer" />
-                  <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
+                                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
                     <Lightbulb className="h-4 w-4 text-[#2997ff]" /> Content Suggestions
                   </h4>
                   <div className="space-y-2">
@@ -1943,8 +1910,7 @@ export default function SEOInsightApp() {
               {/* Outreach Templates */}
               {backlinkResult.outreachTemplates.length > 0 && (
                 <div className="apple-tile p-5">
-                  <div className="glossy-shimmer" />
-                  <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
+                                    <h4 className="text-base font-semibold flex items-center gap-2 text-[#1d1d1f] mb-3">
                     <Mail className="h-4 w-4 text-[#2997ff]" /> Outreach Templates
                   </h4>
                   <div className="space-y-3">
@@ -1996,8 +1962,7 @@ export default function SEOInsightApp() {
 
       {!serpLoading && !serpResult && !serpError && (
         <div className="apple-tile p-6" style={{ border: '1px dashed rgba(0,0,0,0.08)' }}>
-          <div className="glossy-shimmer" />
-          <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#86868b]">
+                    <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#86868b]">
             <LineChart className="h-12 w-12 opacity-30" />
             <p className="text-lg font-medium text-[#1d1d1f]">No SERP analysis yet</p>
             <p className="text-sm">Enter a keyword and click &quot;Analyze SERP&quot; to get started</p>
@@ -2020,16 +1985,8 @@ export default function SEOInsightApp() {
 
   return (
     <div className="app-bg min-h-screen relative overflow-hidden flex flex-col">
-      {/* Animated floating orbs */}
-      <div className="glass-orb glass-orb-blue" style={{ top: '10%', left: '5%', width: 300, height: 300 }} />
-      <div className="glass-orb glass-orb-cyan" style={{ top: '60%', right: '10%', width: 250, height: 250 }} />
-      <div className="glass-orb glass-orb-purple" style={{ top: '30%', left: '50%', width: 280, height: 280 }} />
-      <div className="glass-orb glass-orb-green" style={{ bottom: '15%', left: '20%', width: 220, height: 220 }} />
-      <div className="glass-orb glass-orb-orange" style={{ top: '5%', right: '25%', width: 200, height: 200 }} />
-      <div className="glass-orb glass-orb-pink" style={{ bottom: '30%', right: '5%', width: 260, height: 260 }} />
-
       {/* Mouse-following light */}
-      <div className="mouse-light" style={{ left: mouseX, top: mouseY, opacity: mouseInPage ? 1 : 0 }} />
+      <div ref={mouseLightRef} className="mouse-light" style={{ opacity: 0 }} />
 
       {/* Content layer — above animated background mesh */}
       <div className="content-layer flex flex-col min-h-screen">
